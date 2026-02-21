@@ -1,0 +1,200 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 3,
+  "summary": "IEE (International Employment Ecosystem) - A workforce platform connecting verified workers with employers for daily wage and skilled jobs. Web-based version with worker/employer profiles, job posting and matching, QR codes for worker identification, ratings system, and basic admin dashboard.",
+  "architectural_notes": [
+    "Web-based platform using Motoko backend and React TypeScript frontend",
+    "QR code generation and scanning for worker identification and attendance",
+    "Distance-based job matching algorithm prioritizing verified workers with high reliability scores",
+    "Two primary user roles: Worker and Employer, plus Admin dashboard",
+    "Platform designed for scalability from city-level to national-level expansion",
+    "Trust and security focus with unique Worker IDs and fraud detection capabilities",
+    "Monetization through per-hire service fees, bulk hiring contracts, and subscription plans"
+  ],
+  "known_issues": [
+    "Cannot implement mobile app with Flutter/React Native - web-only platform",
+    "Cannot integrate external databases like PostgreSQL/MongoDB - limited to Motoko backend storage",
+    "Cannot implement SMS/WhatsApp services - no external messaging integration available",
+    "Cannot implement real-time GPS tracking or live location features",
+    "Cannot implement OTP-based authentication with external SMS services",
+    "Cannot implement push notifications (Firebase or similar)",
+    "Cannot implement document upload and storage for ID verification (Aadhar/Labor ID)",
+    "Cannot implement selfie verification or image processing",
+    "Cannot implement payment processing or payroll integration",
+    "Cannot implement cloud hosting on AWS/GCP - deployed on Internet Computer"
+  ],
+  "isFixRequest": false,
+  "imageRequirements": "## Required Images\n- Modern hero banner showing diverse workers and employers connecting through the platform with clean professional aesthetic (hero-banner.dim_1200x400.png)\n- Worker profile icon representing workforce identity and verification (worker-icon.dim_128x128.png)\n- Employer profile icon representing business and hiring (employer-icon.dim_128x128.png)\n- Job posting illustration showing job creation and opportunity (job-posting-icon.dim_128x128.png)\n- QR code scanning illustration for attendance tracking (qr-scan-illustration.dim_256x256.png)\n- Rating stars icon for worker reliability scoring (rating-icon.dim_64x64.png)\n- Dashboard analytics illustration for admin metrics (analytics-illustration.dim_300x200.png)\n- Empty state illustration for no jobs available with encouraging message (no-jobs-illustration.dim_400x300.png)",
+  "existing_features": [
+    {
+      "id": "feature-create-worker-authentication-system-with-profile-creation-including-fields-for-name-mobile-number-unique-auto-generated-worker-id-skills-selection-multi-select-experience-level-availability-toggle-preferred-wage-range-and-location-input",
+      "title": "Create worker authentication system with profile creation including fields for name, mobile number, unique auto-generated Worker ID, skills selection (multi-select), experience level, availability toggle, preferred wage range, and location input",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-generate-and-display-unique-qr-code-for-each-worker-based-on-their-worker-id-that-can-be-used-for-identification-and-attendance-tracking",
+      "title": "Generate and display unique QR code for each worker based on their Worker ID that can be used for identification and attendance tracking",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-employer-authentication-system-with-company-profile-setup-including-fields-for-company-name-contact-person-mobile-number-company-type-and-location",
+      "title": "Create employer authentication system with company profile setup including fields for company name, contact person, mobile number, company type, and location",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-build-job-posting-system-for-employers-to-create-single-or-bulk-job-listings-with-fields-for-required-skill-wage-amount-duration-shift-timing-number-of-workers-needed-job-location-and-job-description",
+      "title": "Build job posting system for employers to create single or bulk job listings with fields for required skill, wage amount, duration, shift timing, number of workers needed, job location, and job description",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-job-discovery-interface-for-workers-showing-nearby-job-listings-with-filters-for-distance-wage-range-and-duration-with-ability-to-accept-or-reject-job-offers-and-view-real-time-job-status",
+      "title": "Create job discovery interface for workers showing nearby job listings with filters for distance, wage range, and duration, with ability to accept or reject job offers and view real-time job status",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-build-qr-based-attendance-tracking-system-where-employers-can-scan-worker-qr-codes-for-check-in-and-check-out-with-work-history-tracking-and-job-completion-records-stored-per-worker",
+      "title": "Build QR-based attendance tracking system where employers can scan worker QR codes for check-in and check-out, with work history tracking and job completion records stored per worker",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-rating-and-reliability-score-system-where-employers-can-rate-workers-after-job-completion-on-a-5-star-scale-with-optional-remarks-and-calculate-cumulative-reliability-score-based-on-ratings-attendance-history-and-job-completion-rate",
+      "title": "Implement rating and reliability score system where employers can rate workers after job completion on a 5-star scale with optional remarks, and calculate cumulative reliability score based on ratings, attendance history, and job completion rate",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-payment-tracking-interface-for-workers-showing-payment-status-for-each-completed-job-earning-history-with-date-and-amount-and-total-earnings-summary",
+      "title": "Create payment tracking interface for workers showing payment status for each completed job, earning history with date and amount, and total earnings summary",
+      "reqIds": [
+        "REQ-9"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-build-employer-workforce-management-dashboard-showing-list-of-hired-workers-live-attendance-status-for-current-jobs-ability-to-request-worker-replacement-and-workforce-analytics-including-total-hires-completion-rates-and-average-ratings",
+      "title": "Build employer workforce management dashboard showing list of hired workers, live attendance status for current jobs, ability to request worker replacement, and workforce analytics including total hires, completion rates, and average ratings",
+      "reqIds": [
+        "REQ-10"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-admin-dashboard-with-system-wide-metrics-including-total-workers-registered-active-employers-count-total-jobs-posted-job-fill-rate-percentage-average-time-to-fill-jobs-worker-retention-rate-and-employer-retention-rate",
+      "title": "Create admin dashboard with system-wide metrics including total workers registered, active employers count, total jobs posted, job fill rate percentage, average time to fill jobs, worker retention rate, and employer retention rate",
+      "reqIds": [
+        "REQ-11"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-employer-job-candidate-review-interface-showing-matched-workers-for-each-job-posting-with-their-reliability-scores-skills-and-distance-with-ability-to-confirm-worker-slots-and-view-auto-fill-suggestions-for-bulk-hiring",
+      "title": "Implement employer job candidate review interface showing matched workers for each job posting with their reliability scores, skills, and distance, with ability to confirm worker slots and view auto-fill suggestions for bulk hiring",
+      "reqIds": [
+        "REQ-12"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-design-modern-professional-and-minimal-user-interface-with-intuitive-navigation-optimized-for-ease-of-use-using-a-clean-color-scheme-that-avoids-blue-and-purple-with-large-touch-targets-and-clear-typography-suitable-for-users-with-varying-literacy-levels",
+      "title": "Design modern, professional, and minimal user interface with intuitive navigation optimized for ease of use, using a clean color scheme that avoids blue and purple, with large touch targets and clear typography suitable for users with varying literacy levels",
+      "reqIds": [
+        "REQ-13"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Worker authentication and profile system with OTP login, profile creation, skills selection, experience level, availability toggle, and unique Worker ID with QR code",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Employer authentication and company profile setup with OTP login",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Job posting system for employers to create single or bulk jobs with skill requirements, wage, duration, shift timing, number of workers needed, and location",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Job matching system that connects workers with nearby jobs based on skill match, distance, availability, and reliability score",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "QR-based attendance tracking system for worker check-in/check-out and work history",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Rating and reliability score system for workers, including performance tracking and skill status indicators",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "Payment tracking system showing payment status, earning history, and job completion records",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-8",
+      "summary": "Admin dashboard with metrics including total workers, active employers, jobs posted, fill rate, and retention analytics",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-9",
+      "summary": "Employer workforce management features including live attendance tracking, replacement requests, and analytics dashboard",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-10",
+      "summary": "Basic notification system for job alerts and updates",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-15",
+      "summary": "Implement job matching algorithm that matches workers to jobs based on skill match percentage, distance radius from job location, worker availability status, and reliability score with priority given to verified workers with high reliability scores",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "status": "pending"
+    }
+  ],
+  "gameProjectType": "none",
+  "projectName": "IEE",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

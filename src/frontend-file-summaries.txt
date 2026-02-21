@@ -1,0 +1,11 @@
+{
+  "frontend/src/App.tsx": "Main application component with TanStack Router configuration including all worker and employer routes with the employer dashboard route properly defined.",
+  "frontend/src/components/UserRoleSelector.tsx": "Role selection component that allows authenticated users to choose between worker or employer roles using the correct UserRole enum values from the backend interface.",
+  "frontend/src/components/ExperienceLevelBadge.tsx": "Reusable badge component that displays worker experience level (novice, intermediate, expert) with appropriate styling and icons, with proper type safety ensuring config is never undefined.",
+  "frontend/src/components/WorkerQRCode.tsx": "QR code display component that generates QR codes for worker IDs using the qrcode library loaded via CDN instead of the non-existent qrcode.react package.",
+  "frontend/src/pages/WorkerRegistration.tsx": "Worker registration form page with fields for mobile number, skills, experience level, wage range, and location, properly typed with ExperienceLevel enum from backend.",
+  "frontend/src/components/Navigation.tsx": "Navigation header component with role-based menu items for workers and employers, authentication controls, and mobile-responsive hamburger menu.",
+  "frontend/src/pages/LandingPage.tsx": "Landing page with hero section, feature highlights, and role-specific call-to-action cards that redirects authenticated users to their appropriate dashboard.",
+  "frontend/src/pages/EmployerRegistration.tsx": "Employer registration form page with company information fields including name, contact person, mobile number, company type, and location with geolocation support.",
+  "frontend/src/pages/EmployerDashboard.tsx": "Employer dashboard page displaying key metrics (total jobs, active jobs, workers, completion rate), recent activity, and quick action links for job management and attendance tracking."
+}

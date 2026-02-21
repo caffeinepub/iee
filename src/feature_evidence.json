@@ -1,0 +1,280 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-create-worker-authentication-system-with-profile-creation-including-fields-for-name-mobile-number-unique-auto-generated-worker-id-skills-selection-multi-select-experience-level-availability-toggle-preferred-wage-range-and-location-input",
+      "featureTitle": "Create worker authentication system with profile creation including fields for name, mobile number, unique auto-generated Worker ID, skills selection (multi-select), experience level, availability toggle, preferred wage range, and location input",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/SkillsMultiSelect.tsx",
+        "frontend/src/pages/WorkerProfile.tsx",
+        "frontend/src/pages/WorkerRegistration.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "qr-code@1.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "camera@1.0.0"
+      ],
+      "testIds": [
+        "REQ-1"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-generate-and-display-unique-qr-code-for-each-worker-based-on-their-worker-id-that-can-be-used-for-identification-and-attendance-tracking",
+      "featureTitle": "Generate and display unique QR code for each worker based on their Worker ID that can be used for identification and attendance tracking",
+      "files": [
+        "frontend/src/components/WorkerQRCode.tsx",
+        "frontend/src/pages/WorkerProfile.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "qr-code@1.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "camera@1.0.0"
+      ],
+      "testIds": [
+        "REQ-2"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-create-employer-authentication-system-with-company-profile-setup-including-fields-for-company-name-contact-person-mobile-number-company-type-and-location",
+      "featureTitle": "Create employer authentication system with company profile setup including fields for company name, contact person, mobile number, company type, and location",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/pages/EmployerProfile.tsx",
+        "frontend/src/pages/EmployerRegistration.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "qr-code@1.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "camera@1.0.0"
+      ],
+      "testIds": [
+        "REQ-3"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-build-job-posting-system-for-employers-to-create-single-or-bulk-job-listings-with-fields-for-required-skill-wage-amount-duration-shift-timing-number-of-workers-needed-job-location-and-job-description",
+      "featureTitle": "Build job posting system for employers to create single or bulk job listings with fields for required skill, wage amount, duration, shift timing, number of workers needed, job location, and job description",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/pages/CreateJobPosting.tsx",
+        "frontend/src/pages/EmployerJobList.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "qr-code@1.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "camera@1.0.0"
+      ],
+      "testIds": [
+        "REQ-4"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-create-job-discovery-interface-for-workers-showing-nearby-job-listings-with-filters-for-distance-wage-range-and-duration-with-ability-to-accept-or-reject-job-offers-and-view-real-time-job-status",
+      "featureTitle": "Create job discovery interface for workers showing nearby job listings with filters for distance, wage range, and duration, with ability to accept or reject job offers and view real-time job status",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/pages/JobDiscovery.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "qr-code@1.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "camera@1.0.0"
+      ],
+      "testIds": [
+        "REQ-6"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-build-qr-based-attendance-tracking-system-where-employers-can-scan-worker-qr-codes-for-check-in-and-check-out-with-work-history-tracking-and-job-completion-records-stored-per-worker",
+      "featureTitle": "Build QR-based attendance tracking system where employers can scan worker QR codes for check-in and check-out, with work history tracking and job completion records stored per worker",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/pages/AttendanceScanner.tsx",
+        "frontend/src/pages/WorkHistory.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "qr-code@1.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "camera@1.0.0"
+      ],
+      "testIds": [
+        "REQ-7"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-rating-and-reliability-score-system-where-employers-can-rate-workers-after-job-completion-on-a-5-star-scale-with-optional-remarks-and-calculate-cumulative-reliability-score-based-on-ratings-attendance-history-and-job-completion-rate",
+      "featureTitle": "Implement rating and reliability score system where employers can rate workers after job completion on a 5-star scale with optional remarks, and calculate cumulative reliability score based on ratings, attendance history, and job completion rate",
+      "files": [
+        "frontend/src/components/ExperienceLevelBadge.tsx",
+        "frontend/src/components/ReliabilityScoreBadge.tsx",
+        "frontend/src/pages/EmployerJobList.tsx",
+        "frontend/src/pages/WorkerProfile.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "qr-code@1.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "camera@1.0.0"
+      ],
+      "testIds": [
+        "REQ-8"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-create-payment-tracking-interface-for-workers-showing-payment-status-for-each-completed-job-earning-history-with-date-and-amount-and-total-earnings-summary",
+      "featureTitle": "Create payment tracking interface for workers showing payment status for each completed job, earning history with date and amount, and total earnings summary",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/pages/WorkerWallet.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "qr-code@1.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "camera@1.0.0"
+      ],
+      "testIds": [
+        "REQ-9"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-build-employer-workforce-management-dashboard-showing-list-of-hired-workers-live-attendance-status-for-current-jobs-ability-to-request-worker-replacement-and-workforce-analytics-including-total-hires-completion-rates-and-average-ratings",
+      "featureTitle": "Build employer workforce management dashboard showing list of hired workers, live attendance status for current jobs, ability to request worker replacement, and workforce analytics including total hires, completion rates, and average ratings",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/pages/EmployerDashboard.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "qr-code@1.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "camera@1.0.0"
+      ],
+      "testIds": [
+        "REQ-10"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-create-admin-dashboard-with-system-wide-metrics-including-total-workers-registered-active-employers-count-total-jobs-posted-job-fill-rate-percentage-average-time-to-fill-jobs-worker-retention-rate-and-employer-retention-rate",
+      "featureTitle": "Create admin dashboard with system-wide metrics including total workers registered, active employers count, total jobs posted, job fill rate percentage, average time to fill jobs, worker retention rate, and employer retention rate",
+      "files": [
+        "frontend/src/App.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "qr-code@1.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "camera@1.0.0"
+      ],
+      "testIds": [
+        "REQ-11"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-employer-job-candidate-review-interface-showing-matched-workers-for-each-job-posting-with-their-reliability-scores-skills-and-distance-with-ability-to-confirm-worker-slots-and-view-auto-fill-suggestions-for-bulk-hiring",
+      "featureTitle": "Implement employer job candidate review interface showing matched workers for each job posting with their reliability scores, skills, and distance, with ability to confirm worker slots and view auto-fill suggestions for bulk hiring",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/pages/EmployerJobList.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "qr-code@1.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "camera@1.0.0"
+      ],
+      "testIds": [
+        "REQ-12"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-design-modern-professional-and-minimal-user-interface-with-intuitive-navigation-optimized-for-ease-of-use-using-a-clean-color-scheme-that-avoids-blue-and-purple-with-large-touch-targets-and-clear-typography-suitable-for-users-with-varying-literacy-levels",
+      "featureTitle": "Design modern, professional, and minimal user interface with intuitive navigation optimized for ease of use, using a clean color scheme that avoids blue and purple, with large touch targets and clear typography suitable for users with varying literacy levels",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/Layout.tsx",
+        "frontend/src/components/Navigation.tsx",
+        "frontend/src/components/UserRoleSelector.tsx",
+        "frontend/src/index.css",
+        "frontend/src/pages/LandingPage.tsx",
+        "frontend/tailwind.config.js"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "qr-code@1.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "camera@1.0.0"
+      ],
+      "testIds": [
+        "REQ-13"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

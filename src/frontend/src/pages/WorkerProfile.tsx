@@ -1,28 +1,13 @@
-import { useNavigate } from '@tanstack/react-router';
-import { useInternetIdentity } from '../hooks/useInternetIdentity';
-import { useGetMyWorkerProfile, useUpdateWorkerAvailability } from '../hooks/useQueries';
+import { useGetMyWorkerProfile, useGetVerifiedWorker } from '../hooks/useQueries';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
-import { Switch } from '../components/ui/switch';
-import { Label } from '../components/ui/label';
+import { MapPin, Star, TrendingUp, Briefcase } from 'lucide-react';
 import WorkerQRCode from '../components/WorkerQRCode';
-import ReliabilityScoreBadge from '../components/ReliabilityScoreBadge';
-import ExperienceLevelBadge from '../components/ExperienceLevelBadge';
-import { Star, MapPin, DollarSign, Briefcase } from 'lucide-react';
-import { useEffect } from 'react';
+import VerificationBadge from '../components/VerificationBadge';
 
 export default function WorkerProfile() {
-  const navigate = useNavigate();
-  const { identity } = useInternetIdentity();
-  const { data: workerProfile, isLoading } = useGetMyWorkerProfile();
-  const updateAvailability = useUpdateWorkerAvailability();
-
-  useEffect(() => {
-    if (!identity) {
-      navigate({ to: '/' });
-    }
-  }, [identity, navigate]);
+  const { data: profile, isLoading } = useGetMyWorkerProfile();
+  const { data: verifiedWorker } = useGetVerifiedWorker(profile?.id);
 
   if (isLoading) {
     return (
@@ -35,145 +20,145 @@ export default function WorkerProfile() {
     );
   }
 
-  if (!workerProfile) {
+  if (!profile) {
     return (
       <div className="container mx-auto px-4 py-12">
         <Card>
-          <CardContent className="pt-6 text-center">
-            <p className="text-muted-foreground mb-4">No worker profile found.</p>
-            <Button onClick={() => navigate({ to: '/worker/register' })}>Create Profile</Button>
+          <CardContent className="py-12 text-center">
+            <p className="text-muted-foreground">No profile found. Please register as a worker.</p>
           </CardContent>
         </Card>
       </div>
     );
   }
 
-  const handleAvailabilityToggle = async (checked: boolean) => {
-    try {
-      await updateAvailability.mutateAsync({
-        workerId: workerProfile.id,
-        isAvailable: checked,
-      });
-    } catch (error) {
-      console.error('Error updating availability:', error);
-    }
-  };
-
-  const skillLabels: Record<string, string> = {
-    masonry: 'Masonry',
-    plumbing: 'Plumbing',
-    electrician: 'Electrician',
-    carpentry: 'Carpentry',
-    painting: 'Painting',
-    roofing: 'Roofing',
-    flooring: 'Flooring',
-    tiling: 'Tiling',
-    welding: 'Welding',
-    generalLabor: 'General Labor',
-  };
-
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">My Profile</h1>
-          <p className="text-muted-foreground">View and manage your worker profile</p>
+          <div className="flex items-center gap-4 mb-2">
+            <h1 className="text-4xl font-bold">{profile.name}</h1>
+            {verifiedWorker && verifiedWorker.badgeLevel !== 'none' && (
+              <VerificationBadge
+                badgeLevel={verifiedWorker.badgeLevel}
+                completedJobs={Number(verifiedWorker.completedJobs)}
+                size="lg"
+              />
+            )}
+          </div>
+          <p className="text-muted-foreground">Worker Profile</p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6 mb-6">
-          <Card className="md:col-span-2">
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-4">
-                  <img
-                    src="/assets/generated/worker-icon.dim_128x128.png"
-                    alt="Worker"
-                    className="w-20 h-20 rounded-full"
-                  />
-                  <div>
-                    <CardTitle className="text-2xl">{workerProfile.name}</CardTitle>
-                    <p className="text-muted-foreground">Worker ID: {workerProfile.id}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Label htmlFor="availability">Available</Label>
-                  <Switch
-                    id="availability"
-                    checked={workerProfile.isAvailable}
-                    onCheckedChange={handleAvailabilityToggle}
-                    disabled={updateAvailability.isPending}
-                  />
-                </div>
-              </div>
+        <div className="grid md:grid-cols-3 gap-6 mb-8">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Reliability Score
+              </CardTitle>
+              <TrendingUp className="h-5 w-5 text-primary" />
             </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
+            <CardContent>
+              <p className="text-3xl font-bold">{profile.reliabilityScore.toFixed(1)}</p>
+              <p className="text-xs text-muted-foreground mt-1">Out of 5.0</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">Rating</CardTitle>
+              <Star className="h-5 w-5 text-primary" />
+            </CardHeader>
+            <CardContent>
+              <p className="text-3xl font-bold">{profile.rating.toFixed(1)}</p>
+              <p className="text-xs text-muted-foreground mt-1">Average rating</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Completed Jobs
+              </CardTitle>
+              <Briefcase className="h-5 w-5 text-primary" />
+            </CardHeader>
+            <CardContent>
+              <p className="text-3xl font-bold">{Number(profile.completedJobs)}</p>
+              <p className="text-xs text-muted-foreground mt-1">Total jobs</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Personal Information</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <p className="text-sm text-muted-foreground mb-1">Mobile Number</p>
+                <p className="font-medium">{profile.mobileNumber}</p>
+              </div>
+
+              <div>
+                <p className="text-sm text-muted-foreground mb-1">Wage Range</p>
+                <p className="font-medium">
+                  ₹{profile.wageRange.min} - ₹{profile.wageRange.max} per day
+                </p>
+              </div>
+
+              <div>
+                <p className="text-sm text-muted-foreground mb-1">Location</p>
                 <div className="flex items-center gap-2">
-                  <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">Rating</p>
-                    <p className="font-semibold">{workerProfile.rating.toFixed(1)} / 5.0</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Briefcase className="h-5 w-5 text-primary" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">Completed Jobs</p>
-                    <p className="font-semibold">{Number(workerProfile.completedJobs)}</p>
-                  </div>
+                  <MapPin className="h-4 w-4 text-primary" />
+                  <p className="font-medium">
+                    {profile.coordinates.latitude.toFixed(4)}, {profile.coordinates.longitude.toFixed(4)}
+                  </p>
                 </div>
               </div>
 
               <div>
-                <p className="text-sm text-muted-foreground mb-2">Reliability Score</p>
-                <ReliabilityScoreBadge score={workerProfile.reliabilityScore} />
-              </div>
-
-              <div>
-                <p className="text-sm text-muted-foreground mb-2">Experience Level</p>
-                <ExperienceLevelBadge level={workerProfile.experienceLevel} />
-              </div>
-
-              <div>
-                <p className="text-sm text-muted-foreground mb-2">Skills</p>
-                <div className="flex flex-wrap gap-2">
-                  {workerProfile.skills.map((skill) => (
-                    <Badge key={skill} variant="secondary">
-                      {skillLabels[skill] || skill}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <p className="text-sm text-muted-foreground mb-2">Wage Range</p>
-                <div className="flex items-center gap-2">
-                  <DollarSign className="h-5 w-5 text-primary" />
-                  <span className="font-semibold">
-                    ₹{workerProfile.wageRange.min} - ₹{workerProfile.wageRange.max} per day
-                  </span>
-                </div>
-              </div>
-
-              <div>
-                <p className="text-sm text-muted-foreground mb-2">Mobile Number</p>
-                <p className="font-semibold">{workerProfile.mobileNumber}</p>
+                <p className="text-sm text-muted-foreground mb-1">Availability</p>
+                <Badge variant={profile.isAvailable ? 'default' : 'secondary'}>
+                  {profile.isAvailable ? 'Available' : 'Not Available'}
+                </Badge>
               </div>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader>
-              <CardTitle>Your QR Code</CardTitle>
+              <CardTitle>Skills & Experience</CardTitle>
             </CardHeader>
             <CardContent>
-              <WorkerQRCode workerId={workerProfile.id} />
-              <p className="text-xs text-muted-foreground text-center mt-4">
-                Show this QR code to employers for attendance check-in
-              </p>
+              <div className="space-y-3">
+                {profile.skills.map((skillData, index) => (
+                  <div key={`${skillData.skill}-${index}`} className="p-3 bg-muted rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="font-semibold capitalize">
+                        {skillData.skill.replace(/([A-Z])/g, ' $1').trim()}
+                      </p>
+                      <Badge variant="outline" className="capitalize">
+                        {skillData.experienceLevel}
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      {Number(skillData.yearsOfExperience)} years of experience
+                    </p>
+                  </div>
+                ))}
+              </div>
             </CardContent>
           </Card>
         </div>
+
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle>QR Code for Attendance</CardTitle>
+          </CardHeader>
+          <CardContent className="flex justify-center">
+            <WorkerQRCode workerId={profile.id} />
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

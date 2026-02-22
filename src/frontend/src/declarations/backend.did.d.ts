@@ -16,13 +16,33 @@ export interface AttendanceRecord {
   'checkInTime' : [] | [Time],
   'checkOutTime' : [] | [Time],
 }
+export interface AvailabilityRequest {
+  'available' : boolean,
+  'timeRange' : [] | [[string, string]],
+  'dayIndex' : bigint,
+}
+export type BadgeLevel = { 'bronze' : null } |
+  { 'gold' : null } |
+  { 'none' : null } |
+  { 'silver' : null };
+export interface BulkJobResult {
+  'successfullyCreatedJobs' : Array<string>,
+  'validJobs' : Array<JobPosting>,
+  'invalidEntries' : Array<string>,
+}
 export interface CandidateMatch {
   'reliabilityScore' : number,
   'workerId' : string,
   'distance' : number,
+  'matchScore' : number,
   'skillsMatchPercentage' : number,
 }
+export interface CertifiedSkill { 'skill' : Skill, 'isCertified' : boolean }
 export interface Coordinates { 'latitude' : number, 'longitude' : number }
+export interface DayAvailability {
+  'available' : boolean,
+  'timeRange' : [] | [[string, string]],
+}
 export interface EmployerProfile {
   'principal' : Principal,
   'contactPerson' : string,
@@ -44,15 +64,55 @@ export interface JobPosting {
   'employerId' : Principal,
   'assignedWorkers' : Array<string>,
   'wageAmount' : number,
-  'requiredSkills' : Array<Skill>,
+  'requiredSkills' : Array<SkillWithExperience>,
   'location' : Coordinates,
   'workerCount' : bigint,
 }
-export interface PaymentRecord {
+export interface JobReminders {
+  'updateSent' : boolean,
+  'workerId' : string,
+  'confirmationSent' : boolean,
+  'cancelled' : boolean,
   'jobId' : string,
-  'isPaid' : boolean,
+  'reminderSent' : boolean,
+}
+export interface JobTemplate {
+  'duration' : number,
+  'templateId' : string,
+  'jobDescription' : string,
+  'templateName' : string,
+  'shiftTiming' : string,
+  'employerId' : Principal,
+  'wageAmount' : number,
+  'requiredSkills' : Array<SkillWithExperience>,
+  'location' : Coordinates,
+  'workerCount' : bigint,
+}
+export interface MonthlyFillRate { 'month' : string, 'fillRate' : number }
+export type PaymentMethod = { 'mobileMoney' : null } |
+  { 'cash' : null } |
+  { 'bankTransfer' : null } |
+  { 'crypto' : null };
+export interface PaymentRecord {
+  'paymentStatus' : PaymentStatus,
+  'paymentMethod' : PaymentMethod,
+  'jobId' : string,
   'paymentDate' : Time,
+  'runningBalance' : number,
   'amount' : number,
+}
+export type PaymentStatus = { 'pending' : null } |
+  { 'completed' : null } |
+  { 'failed' : null };
+export interface RetentionMetrics {
+  'periodDays' : bigint,
+  'employerRetention' : number,
+  'workerRetention' : number,
+}
+export interface RevenueMetrics {
+  'averageRevenuePerJob' : number,
+  'totalTransactionVolume' : number,
+  'subscriptionTierDistribution' : Array<string>,
 }
 export type Skill = { 'roofing' : null } |
   { 'tiling' : null } |
@@ -64,14 +124,23 @@ export type Skill = { 'roofing' : null } |
   { 'flooring' : null } |
   { 'carpentry' : null } |
   { 'masonry' : null };
+export interface SkillWithExperience {
+  'yearsOfExperience' : bigint,
+  'experienceLevel' : ExperienceLevel,
+  'skill' : Skill,
+  'certificationStatus' : Array<CertifiedSkill>,
+}
 export interface SystemMetrics {
   'workerRetentionRate' : number,
   'totalJobsPosted' : bigint,
   'employerRetentionRate' : number,
   'activeEmployersCount' : bigint,
+  'retentionMetrics' : Array<RetentionMetrics>,
   'totalWorkersRegistered' : bigint,
   'jobFillRate' : number,
   'averageTimeToFillJobs' : number,
+  'revenueMetrics' : RevenueMetrics,
+  'monthlyFillRates' : Array<MonthlyFillRate>,
 }
 export type Time = bigint;
 export interface UserProfile { 'name' : string, 'role' : UserRole }
@@ -80,10 +149,18 @@ export type UserRole = { 'employer' : null } |
 export type UserRole__1 = { 'admin' : null } |
   { 'user' : null } |
   { 'guest' : null };
+export interface VerifiedWorker {
+  'badgeLevel' : BadgeLevel,
+  'completedJobs' : bigint,
+  'reliabilityScore' : number,
+  'workerId' : string,
+  'principal' : Principal,
+  'averageRating' : number,
+  'verifiedAt' : Time,
+}
 export interface WageRange { 'max' : number, 'min' : number }
 export interface WorkerProfile {
   'id' : string,
-  'experienceLevel' : ExperienceLevel,
   'completedJobs' : bigint,
   'reliabilityScore' : number,
   'principal' : Principal,
@@ -94,21 +171,47 @@ export interface WorkerProfile {
   'mobileNumber' : string,
   'attendanceRecords' : Array<AttendanceRecord>,
   'rating' : number,
-  'skills' : Array<Skill>,
+  'skills' : Array<SkillWithExperience>,
   'coordinates' : Coordinates,
 }
 export interface _SERVICE {
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
+  'addFavoriteWorker' : ActorMethod<[Principal, string], undefined>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole__1], undefined>,
   'assignWorkerToJob' : ActorMethod<[string, string], undefined>,
+  'bulkJobUpload' : ActorMethod<
+    [
+      Array<
+        [
+          string,
+          Array<SkillWithExperience>,
+          number,
+          number,
+          string,
+          bigint,
+          Coordinates,
+          string,
+        ]
+      >,
+    ],
+    BulkJobResult
+  >,
   'checkInWorker' : ActorMethod<[string, string], undefined>,
   'checkOutWorker' : ActorMethod<[string, string], undefined>,
   'createJobPosting' : ActorMethod<
-    [Array<Skill>, number, number, string, bigint, Coordinates, string],
+    [
+      Array<SkillWithExperience>,
+      number,
+      number,
+      string,
+      bigint,
+      Coordinates,
+      string,
+    ],
     string
   >,
   'createWorkerProfile' : ActorMethod<
-    [string, string, Array<Skill>, ExperienceLevel, WageRange, Coordinates],
+    [string, string, Array<SkillWithExperience>, WageRange, Coordinates],
     string
   >,
   'getAllEmployers' : ActorMethod<[], Array<EmployerProfile>>,
@@ -116,14 +219,19 @@ export interface _SERVICE {
   'getAllWorkers' : ActorMethod<[], Array<WorkerProfile>>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole__1>,
+  'getEmployerFavoriteWorkers' : ActorMethod<[Principal], Array<string>>,
   'getEmployerProfile' : ActorMethod<[Principal], [] | [EmployerProfile]>,
   'getJobMatches' : ActorMethod<[string], Array<CandidateMatch>>,
   'getJobPosting' : ActorMethod<[string], [] | [JobPosting]>,
+  'getJobReminders' : ActorMethod<[string], Array<JobReminders>>,
+  'getJobTemplates' : ActorMethod<[Principal], Array<JobTemplate>>,
   'getMyEmployerProfile' : ActorMethod<[], [] | [EmployerProfile]>,
   'getMyJobPostings' : ActorMethod<[], Array<JobPosting>>,
   'getMyWorkerProfile' : ActorMethod<[], [] | [WorkerProfile]>,
   'getSystemMetrics' : ActorMethod<[], SystemMetrics>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
+  'getVerifiedWorker' : ActorMethod<[string], [] | [VerifiedWorker]>,
+  'getWorkerAvailability' : ActorMethod<[string], Array<DayAvailability>>,
   'getWorkerPaymentHistory' : ActorMethod<[string], Array<PaymentRecord>>,
   'getWorkerProfile' : ActorMethod<[string], [] | [WorkerProfile]>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
@@ -131,10 +239,20 @@ export interface _SERVICE {
     [string, string, bigint, [] | [string]],
     undefined
   >,
-  'recordPayment' : ActorMethod<[string, string, number], undefined>,
+  'recordPayment' : ActorMethod<
+    [string, string, number, PaymentMethod],
+    undefined
+  >,
+  'removeFavoriteWorker' : ActorMethod<[Principal, string], undefined>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
   'saveEmployerProfile' : ActorMethod<[EmployerProfile], undefined>,
+  'saveJobTemplate' : ActorMethod<[JobTemplate], undefined>,
+  'updateJobReminders' : ActorMethod<[JobReminders], undefined>,
   'updateWorkerAvailability' : ActorMethod<[string, boolean], undefined>,
+  'updateWorkerAvailabilityWithPattern' : ActorMethod<
+    [string, Array<AvailabilityRequest>],
+    undefined
+  >,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];

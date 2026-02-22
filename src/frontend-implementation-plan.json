@@ -1,428 +1,237 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "IEE Workforce Platform - Frontend Implementation",
+  "title": "Add worker verification badges, employer favorites, job templates, availability calendar, and job reminders",
   "requirements": [
     {
-      "id": "REQ-1",
-      "summary": "Create worker registration and profile management UI with authentication, profile fields (name, mobile, skills, experience, availability, wage range, location), and auto-generated Worker ID display",
+      "id": "REQ-24",
+      "summary": "Display worker verification badges on profiles and candidate lists with tier-based colors and job completion counts",
       "acceptanceCriteria": [
-        "Worker can create profile with all required fields",
-        "Unique Worker ID is automatically generated upon registration",
-        "Skills can be selected from predefined list with multi-select capability",
-        "Availability can be toggled on/off",
-        "Profile data is persisted in backend"
+        "Badge component displays appropriate icon and color for each tier",
+        "Badge shows on worker profile page near reliability score",
+        "Badge appears in employer job candidate review lists",
+        "Badge includes tooltip or label showing milestone achievement"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/WorkerRegistration.tsx",
+          "path": "frontend/src/components/VerificationBadge.tsx",
           "operation": "create",
-          "description": "Create worker registration page with form fields for name, mobile number, skills multi-select (using Skill enum from backend), experience level dropdown, availability toggle, wage range inputs (min/max), and location coordinates input. Use the authorization component to ensure user is authenticated before showing the form. Call createWorkerProfile backend method on form submission. Display the auto-generated Worker ID returned from backend after successful registration. Include form validation for all required fields."
+          "description": "Create VerificationBadge component that displays badge icon with tier-specific colors (bronze/copper, silver/gray, gold/yellow) based on BadgeLevel enum. Component accepts badgeLevel prop from VerifiedWorker type and completedJobs count. Renders badge image from frontend/public/assets/generated/badge-bronze.dim_128x128.png, badge-silver.dim_128x128.png, or badge-gold.dim_128x128.png with appropriate styling. Includes tooltip showing milestone achievement (10/50/100 jobs). Returns null if badgeLevel is 'none'."
         },
         {
-          "path": "frontend/src/pages/WorkerProfile.tsx",
-          "operation": "create",
-          "description": "Create worker profile view page displaying worker details including Worker ID, name, mobile, skills list, experience level badge, availability status toggle, wage range, location, reliability score, rating, and completed jobs count. Fetch worker data using getMyWorkerProfile backend method. Use the worker-icon.dim_128x128.png image from frontend/public/assets/generated/ as profile avatar. Allow toggling availability using updateWorkerAvailability backend method. Show loading and error states appropriately."
-        },
-        {
-          "path": "frontend/src/hooks/useWorkerProfile.ts",
-          "operation": "create",
-          "description": "Create React Query hook for fetching and managing worker profile data. Implement useGetMyWorkerProfile query hook that calls getMyWorkerProfile backend method. Implement useCreateWorkerProfile mutation hook that calls createWorkerProfile backend method. Implement useUpdateWorkerAvailability mutation hook that calls updateWorkerAvailability backend method. Include proper error handling, loading states, and cache invalidation on mutations."
-        },
-        {
-          "path": "frontend/src/components/SkillsMultiSelect.tsx",
-          "operation": "create",
-          "description": "Create reusable multi-select component for skills selection using Skill enum values from backend interface. Use shadcn/ui Select or Checkbox components for multi-select UI. Display selected skills as tags/badges. Allow adding and removing skills. Export component for use in registration and profile editing forms."
-        },
-        {
-          "path": "frontend/src/App.tsx",
+          "path": "frontend/src/hooks/useQueries.ts",
           "operation": "modify",
-          "description": "Add route definitions for /worker/register and /worker/profile pages. Wire WorkerRegistration and WorkerProfile components into the React Router configuration. Ensure routes are protected with authorization component so only authenticated users can access worker pages. Add navigation links to worker routes in the app navigation menu."
-        }
-      ]
-    },
-    {
-      "id": "REQ-2",
-      "summary": "Generate and display unique QR code for each worker based on Worker ID for identification and attendance tracking",
-      "acceptanceCriteria": [
-        "QR code is generated for each worker upon profile creation",
-        "QR code contains worker's unique ID",
-        "QR code is displayable in worker profile",
-        "QR code can be scanned for identification"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/WorkerQRCode.tsx",
-          "operation": "create",
-          "description": "Create component that generates and displays a QR code containing the worker's ID. Use a QR code generation library (e.g., qrcode.react or similar) to encode the worker ID string. Display the QR code with appropriate sizing (256x256px or larger for easy scanning). Include the worker ID text below the QR code for reference. Make the component accept workerId as a prop and handle loading/error states if worker data is being fetched."
+          "description": "Add useGetVerifiedWorker query hook that calls actor.getVerifiedWorker(workerId) to fetch verification badge data including badgeLevel and completedJobs count. Enable the query only when workerId is provided and actor is available."
         },
         {
           "path": "frontend/src/pages/WorkerProfile.tsx",
           "operation": "modify",
-          "description": "Integrate WorkerQRCode component into the worker profile page. Display the QR code prominently in the profile view so workers can easily show it for check-in/check-out. Position it near the top of the profile or in a dedicated section. Pass the worker's ID to the WorkerQRCode component."
+          "description": "Import and integrate VerificationBadge component to display worker verification status. Use useGetVerifiedWorker hook to fetch badge data for current worker. Position badge prominently near reliability score display. Show badge with completion count and tier information."
         },
-        {
-          "path": "frontend/package.json",
-          "operation": "modify",
-          "description": "Add qrcode.react library dependency for QR code generation in the frontend. Include version compatible with React 18 and TypeScript."
-        }
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "summary": "Create employer registration and company profile management UI with authentication, profile fields (company name, contact person, mobile, company type, location)",
-      "acceptanceCriteria": [
-        "Employer can create company profile with all required fields",
-        "Profile data is validated and persisted",
-        "Employer can view and edit their company profile"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/EmployerRegistration.tsx",
-          "operation": "create",
-          "description": "Create employer registration page with form fields for company name, contact person, mobile number, company type dropdown/input, and location coordinates. Use the authorization component to ensure user is authenticated before showing the form. Call saveEmployerProfile backend method on form submission with EmployerProfile data structure. Include form validation for all required fields. After successful registration, redirect to employer dashboard."
-        },
-        {
-          "path": "frontend/src/pages/EmployerProfile.tsx",
-          "operation": "create",
-          "description": "Create employer profile view and edit page displaying company details including company name, contact person, mobile, company type, and location. Fetch employer data using getMyEmployerProfile backend method. Use the employer-icon.dim_128x128.png image from frontend/public/assets/generated/ as company avatar. Provide an edit mode that allows updating profile fields and calls saveEmployerProfile backend method on save. Show loading and error states appropriately."
-        },
-        {
-          "path": "frontend/src/hooks/useEmployerProfile.ts",
-          "operation": "create",
-          "description": "Create React Query hook for fetching and managing employer profile data. Implement useGetMyEmployerProfile query hook that calls getMyEmployerProfile backend method. Implement useSaveEmployerProfile mutation hook that calls saveEmployerProfile backend method. Include proper error handling, loading states, and cache invalidation on mutations."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Add route definitions for /employer/register and /employer/profile pages. Wire EmployerRegistration and EmployerProfile components into the React Router configuration. Ensure routes are protected with authorization component so only authenticated users can access employer pages. Add navigation links to employer routes in the app navigation menu."
-        }
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "summary": "Build job posting creation UI for employers with fields for skill, wage, duration, shift timing, worker count, location, description, and support for bulk job creation",
-      "acceptanceCriteria": [
-        "Employers can create new job postings with all specified fields",
-        "Bulk job option allows posting multiple worker slots for same job",
-        "Job postings are saved and retrievable",
-        "Posted jobs have unique job IDs"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/CreateJobPosting.tsx",
-          "operation": "create",
-          "description": "Create job posting form page with fields for required skills (using SkillsMultiSelect component), wage amount input, duration input (in hours/days), shift timing input (text or time picker), number of workers needed (workerCount), job location coordinates, and job description textarea. Use the authorization component to ensure only authenticated employers can access this page. Call createJobPosting backend method on form submission. Display the returned job ID after successful creation. Include form validation for all required fields. Use the job-posting-icon.dim_128x128.png image from frontend/public/assets/generated/ as page header icon."
-        },
-        {
-          "path": "frontend/src/hooks/useJobPosting.ts",
-          "operation": "create",
-          "description": "Create React Query hook for job posting operations. Implement useCreateJobPosting mutation hook that calls createJobPosting backend method. Implement useGetMyJobPostings query hook that calls getMyJobPostings backend method to fetch employer's job list. Implement useGetJobPosting query hook that calls getJobPosting backend method for individual job details. Include proper error handling, loading states, and cache invalidation on mutations."
-        },
-        {
-          "path": "frontend/src/pages/EmployerJobList.tsx",
-          "operation": "create",
-          "description": "Create page displaying list of employer's posted jobs. Fetch jobs using getMyJobPostings backend method. Display job cards showing job title/description, required skills, wage, worker count, assigned workers count, and job status (open/filled/completed). Include filters for job status and sorting options. Provide link to detailed job view for each job. Show empty state using the no-jobs-illustration.dim_400x300.png image from frontend/public/assets/generated/ when no jobs exist."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Add route definitions for /employer/jobs/create and /employer/jobs pages. Wire CreateJobPosting and EmployerJobList components into the React Router configuration. Ensure routes are protected so only authenticated employers can access these pages. Add navigation links to job management routes in the employer section of the app navigation menu."
-        }
-      ]
-    },
-    {
-      "id": "REQ-6",
-      "summary": "Create job discovery interface for workers showing nearby jobs with filters (distance, wage, duration), accept/reject actions, and real-time status display",
-      "acceptanceCriteria": [
-        "Workers can view list of matched jobs",
-        "Filter controls for distance, wage, and duration are functional",
-        "Accept/Reject buttons update job application status",
-        "Job status is displayed clearly (pending, accepted, rejected, completed)",
-        "Bulk job slots show number of positions available"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/JobDiscovery.tsx",
-          "operation": "create",
-          "description": "Create job discovery page for workers displaying available job listings. Fetch all job postings using getAllJobPostings backend method and filter client-side based on worker's profile and preferences. Implement filter controls for distance range, wage range, and duration. Display job cards showing job description, required skills, wage, duration, shift timing, location distance, worker slots (e.g., '2/5 filled'), and job status. Provide Accept and Reject action buttons for each job that call assignWorkerToJob backend method. Show job status badges (open, assigned, in-progress, completed). Use the no-jobs-illustration.dim_400x300.png image from frontend/public/assets/generated/ for empty state when no matching jobs are found."
-        },
-        {
-          "path": "frontend/src/components/JobCard.tsx",
-          "operation": "create",
-          "description": "Create reusable job card component displaying job details in a compact card format. Show job description/title, required skills tags, wage amount, duration, shift timing, distance from worker location, worker slots availability (e.g., '3/10 filled'), and status badge. Include Accept and Reject action buttons when applicable. Make the component configurable to show different actions based on user role (worker vs employer view). Use responsive layout suitable for mobile and desktop viewing."
-        },
-        {
-          "path": "frontend/src/components/JobFilters.tsx",
-          "operation": "create",
-          "description": "Create job filters component with controls for filtering jobs by distance range (slider or input), wage range (min/max inputs or range slider), and duration (dropdown or input). Implement controlled component pattern with onChange callbacks to parent component. Use shadcn/ui form components for consistent styling. Make filters collapsible or expandable for mobile-friendly UI."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Add route definition for /worker/jobs page. Wire JobDiscovery component into the React Router configuration. Ensure route is protected so only authenticated workers can access this page. Add navigation link to job discovery in the worker section of the app navigation menu."
-        }
-      ]
-    },
-    {
-      "id": "REQ-7",
-      "summary": "Build QR-based attendance tracking UI where employers can scan worker QR codes for check-in/check-out, with work history display",
-      "acceptanceCriteria": [
-        "Employer interface includes QR scanner functionality",
-        "Check-in records timestamp and job ID when worker QR is scanned",
-        "Check-out records completion timestamp",
-        "Work history shows all past jobs with dates and duration",
-        "Completed jobs are marked in worker's job completion record"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/AttendanceScanner.tsx",
-          "operation": "create",
-          "description": "Create attendance scanning page for employers using the qr-code component's useQRScanner hook. Display camera preview with QR scanner overlay. When a QR code is scanned, extract the worker ID and show a modal/dialog to select the job and action (check-in or check-out). Call checkInWorker or checkOutWorker backend methods with the scanned worker ID and selected job ID. Display scan success/failure feedback. Show recently scanned workers list with their check-in/check-out status. Use the qr-scan-illustration.dim_256x256.png image from frontend/public/assets/generated/ in the scanner UI or instructions. Verify the qr-code component's usage instructions before implementing. Ensure camera has explicit dimensions and responsive layout. Include error handling for camera permissions and unsupported devices."
-        },
-        {
-          "path": "frontend/src/pages/WorkHistory.tsx",
-          "operation": "create",
-          "description": "Create work history page displaying worker's past jobs and attendance records. Fetch worker profile using getMyWorkerProfile backend method which includes attendanceRecords array. Display list of jobs with date, job description/ID, check-in time, check-out time, duration, and completion status. Show total completed jobs count. Include filters for date range and completion status. Provide a summary section showing total hours worked, completed jobs count, and reliability score."
-        },
-        {
-          "path": "frontend/src/components/AttendanceRecord.tsx",
-          "operation": "create",
-          "description": "Create component to display individual attendance record details. Show job ID/description, date, check-in timestamp, check-out timestamp, total duration calculated from timestamps, and completion status badge. Format timestamps in readable date/time format. Make the component reusable for both employer and worker views."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Add route definitions for /employer/attendance and /worker/history pages. Wire AttendanceScanner and WorkHistory components into the React Router configuration. Ensure routes are properly protected based on user role (attendance scanner for employers, work history for workers). Add navigation links to these routes in the respective sections of the app navigation menu."
-        }
-      ]
-    },
-    {
-      "id": "REQ-8",
-      "summary": "Implement rating UI where employers rate workers after job completion (5-star scale with remarks) and display reliability score in worker profiles",
-      "acceptanceCriteria": [
-        "Employers can submit 5-star rating and text remarks after job completion",
-        "Reliability score is calculated from average rating, attendance rate, and completion rate",
-        "Worker profile displays current reliability score",
-        "Rating history is stored and viewable",
-        "3-level skill status indicator (beginner/intermediate/expert) is displayed based on experience"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/RatingModal.tsx",
-          "operation": "create",
-          "description": "Create modal component for employers to rate workers after job completion. Include 5-star rating input (interactive star selector), optional text area for remarks, job ID and worker ID fields (pre-filled), and submit button. Call rateWorker backend method on submission with rating (as bigint), remarks (as string | null), job ID, and worker ID. Use the rating-icon.dim_64x64.png image from frontend/public/assets/generated/ in the modal header. Display success message on successful rating submission. Include form validation to ensure rating is selected before submission."
-        },
-        {
-          "path": "frontend/src/components/ReliabilityScoreBadge.tsx",
-          "operation": "create",
-          "description": "Create component to display worker reliability score as a visual badge or progress indicator. Show numeric score with appropriate styling (color-coded: green for high scores, yellow for medium, red for low). Include tooltip or label explaining score calculation (based on ratings, attendance, completion rate). Make the component reusable across worker profile, job candidate lists, and attendance views."
-        },
-        {
-          "path": "frontend/src/components/ExperienceLevelBadge.tsx",
-          "operation": "create",
-          "description": "Create component to display 3-level skill status indicator based on worker's experience level (novice, intermediate, expert). Use distinct visual styling for each level (icons, colors, or badges). Accept experienceLevel as prop (ExperienceLevel enum from backend). Make the component reusable in worker profiles and job candidate views."
-        },
-        {
-          "path": "frontend/src/pages/WorkerProfile.tsx",
-          "operation": "modify",
-          "description": "Integrate ReliabilityScoreBadge and ExperienceLevelBadge components into the worker profile page. Display reliability score prominently near the top of the profile. Show experience level badge next to skills section. Add a section showing rating history (average rating, number of ratings) if available from worker profile data."
-        },
-        {
-          "path": "frontend/src/pages/EmployerJobList.tsx",
-          "operation": "modify",
-          "description": "Add a 'Rate Workers' action to completed job cards that opens the RatingModal. Pass job ID and assigned worker IDs to the modal. Only show the rating action for completed jobs that haven't been rated yet. Display a 'Rated' indicator for jobs where workers have already been rated."
-        }
-      ]
-    },
-    {
-      "id": "REQ-9",
-      "summary": "Create payment tracking interface showing payment status per job, earning history with dates and amounts, and total earnings summary",
-      "acceptanceCriteria": [
-        "Workers can view payment status for each job (pending, paid)",
-        "Earning history displays all completed jobs with amounts and dates",
-        "Total earnings summary is calculated and displayed",
-        "Payment records are linked to specific job completions"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/WorkerWallet.tsx",
-          "operation": "create",
-          "description": "Create wallet/earnings page for workers displaying payment information. Fetch payment history using getWorkerPaymentHistory backend method with worker's ID. Display total earnings summary at the top (sum of all paid amounts). Show list of payment records with job ID, amount, payment date, and payment status (pending/paid). Include filters for date range and payment status. Provide sorting options (by date, amount). Calculate and display pending earnings (sum of unpaid jobs). Use a card-based layout for payment records showing job details, wage amount, and payment status badge."
-        },
-        {
-          "path": "frontend/src/components/PaymentStatusBadge.tsx",
-          "operation": "create",
-          "description": "Create component to display payment status as a visual badge. Show 'Paid' in green or 'Pending' in yellow/orange. Accept isPaid boolean prop from PaymentRecord. Make the badge reusable across wallet page and work history views."
-        },
-        {
-          "path": "frontend/src/hooks/usePaymentHistory.ts",
-          "operation": "create",
-          "description": "Create React Query hook for fetching worker payment history. Implement useGetWorkerPaymentHistory query hook that calls getWorkerPaymentHistory backend method with worker ID parameter. Include proper error handling and loading states. Support cache invalidation when new payments are recorded."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Add route definition for /worker/wallet page. Wire WorkerWallet component into the React Router configuration. Ensure route is protected so only authenticated workers can access their wallet. Add navigation link to wallet in the worker section of the app navigation menu."
-        }
-      ]
-    },
-    {
-      "id": "REQ-10",
-      "summary": "Build employer workforce management dashboard showing hired workers, live attendance, replacement requests, and workforce analytics (hires, completion rates, ratings)",
-      "acceptanceCriteria": [
-        "Dashboard displays all current and past worker assignments",
-        "Attendance status shows who is checked in/out in real-time",
-        "Replacement request button allows employer to request new worker for unfilled slot",
-        "Analytics section shows total hires count, job completion rate, and average worker ratings",
-        "Payment tracking shows pending and completed payments"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/EmployerDashboard.tsx",
-          "operation": "create",
-          "description": "Create comprehensive employer dashboard page. Display summary metrics at the top: total jobs posted, active jobs, total workers hired, and completion rate. Show list of current jobs with live attendance status for each assigned worker (checked-in, checked-out, pending). Fetch jobs using getMyJobPostings backend method. For each job, display assigned workers with their check-in/check-out status from attendance records. Include 'Request Replacement' button for incomplete worker slots that allows employer to reopen the job posting. Show workforce analytics section with charts/cards displaying total hires count, job completion rate percentage, and average worker ratings across all jobs. Include payment tracking section showing pending and completed payment summaries. Use the analytics-illustration.dim_300x200.png image from frontend/public/assets/generated/ in the analytics section."
-        },
-        {
-          "path": "frontend/src/components/WorkerAttendanceCard.tsx",
-          "operation": "create",
-          "description": "Create component displaying worker attendance information for a specific job. Show worker name/ID, check-in status (checked-in, checked-out, not checked-in), check-in timestamp, check-out timestamp, and duration if checked out. Use color-coded status indicators (green for checked-in, blue for checked-out, gray for pending). Include link to worker profile for more details. Make the component reusable in employer dashboard and job detail views."
-        },
-        {
-          "path": "frontend/src/components/EmployerAnalytics.tsx",
-          "operation": "create",
-          "description": "Create analytics component for employer dashboard displaying key workforce metrics. Calculate and show total hires count (sum of assigned workers across all jobs), job completion rate (completed jobs / total jobs * 100), and average worker ratings (mean of all ratings given). Use card-based layout with icons and numeric displays. Fetch necessary data from employer's job postings and worker ratings. Make metrics visually prominent with appropriate styling."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Add route definition for /employer/dashboard page. Wire EmployerDashboard component into the React Router configuration. Ensure route is protected so only authenticated employers can access the dashboard. Make this the default landing page for employers after login. Add navigation link to dashboard in the employer section of the app navigation menu."
-        }
-      ]
-    },
-    {
-      "id": "REQ-11",
-      "summary": "Create admin dashboard displaying system-wide metrics including workers registered, active employers, jobs posted, fill rate, time to fill, and retention rates",
-      "acceptanceCriteria": [
-        "Admin can view dashboard with all key metrics",
-        "Metrics are calculated from backend data",
-        "Fill rate percentage shows (filled jobs / total jobs) * 100",
-        "Average time to fill calculates mean hours from job post to first worker acceptance",
-        "Retention rates track active users over time periods",
-        "Dashboard updates reflect current system state"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/AdminDashboard.tsx",
-          "operation": "create",
-          "description": "Create admin dashboard page displaying system-wide metrics. Use the authorization component to ensure only admin users can access this page. Fetch metrics using getSystemMetrics backend method. Display metrics in card-based layout: total workers registered, active employers count, total jobs posted, job fill rate percentage, average time to fill jobs (in hours), worker retention rate, and employer retention rate. Use the analytics-illustration.dim_300x200.png image from frontend/public/assets/generated/ as dashboard header or in metrics section. Include refresh button to update metrics. Show loading state while fetching data. Format numbers appropriately (e.g., percentages with % sign, time in hours/days)."
-        },
-        {
-          "path": "frontend/src/components/MetricCard.tsx",
-          "operation": "create",
-          "description": "Create reusable metric card component for displaying individual statistics. Accept props for metric label, value, unit, icon, and optional trend indicator. Use clean card design with large numeric display, descriptive label, and appropriate icon. Make the component flexible to display different metric types (counts, percentages, time values). Apply consistent styling across all metric cards."
-        },
-        {
-          "path": "frontend/src/hooks/useSystemMetrics.ts",
-          "operation": "create",
-          "description": "Create React Query hook for fetching system-wide admin metrics. Implement useGetSystemMetrics query hook that calls getSystemMetrics backend method. Include proper error handling and loading states. Support manual refetch for dashboard refresh functionality."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Add route definition for /admin/dashboard page. Wire AdminDashboard component into the React Router configuration. Protect route with authorization component to restrict access to admin users only. Add admin navigation section with link to admin dashboard. Include role-based navigation logic to show/hide admin menu items based on user's admin status."
-        }
-      ]
-    },
-    {
-      "id": "REQ-12",
-      "summary": "Implement employer job candidate review interface showing matched workers with reliability scores, skills, distance, with confirm slots and auto-fill functionality",
-      "acceptanceCriteria": [
-        "Employer can view list of matched candidates for each job posting",
-        "Each candidate card shows reliability score, skills, experience, and distance",
-        "Confirm button allows employer to select specific workers",
-        "Auto-fill option automatically selects top-ranked workers to fill all slots",
-        "Confirmed workers are notified of job assignment"
-      ],
-      "file_operations": [
         {
           "path": "frontend/src/pages/JobCandidates.tsx",
           "operation": "create",
-          "description": "Create job candidates review page for employers. Accept job ID as route parameter. Fetch matched candidates using getJobMatches backend method. Display list of candidate cards showing worker ID, reliability score, skills match percentage, distance from job location, and experience level. Fetch full worker details using getWorkerProfile for additional information. Include 'Confirm' button for each candidate that calls assignWorkerToJob backend method. Add 'Auto-fill' button that automatically selects and assigns top-ranked candidates (highest reliability score, closest distance) to fill all remaining job slots. Show assigned workers separately from available candidates. Display job details at the top including required skills, wage, worker slots (e.g., '3/10 filled'). Include filters for skill match percentage and distance range."
-        },
-        {
-          "path": "frontend/src/components/CandidateCard.tsx",
-          "operation": "create",
-          "description": "Create component to display individual candidate information in a card format. Show worker name/ID, reliability score badge, skills match percentage, list of matching skills, experience level badge, distance from job location, and average rating. Include 'Confirm' action button. Use responsive card layout with clear visual hierarchy. Integrate ReliabilityScoreBadge and ExperienceLevelBadge components for consistent styling. Make the card clickable to view full worker profile."
-        },
-        {
-          "path": "frontend/src/hooks/useJobMatches.ts",
-          "operation": "create",
-          "description": "Create React Query hook for fetching job candidate matches. Implement useGetJobMatches query hook that calls getJobMatches backend method with job ID parameter. Implement useAssignWorkerToJob mutation hook that calls assignWorkerToJob backend method. Include proper error handling, loading states, and cache invalidation when workers are assigned."
-        },
-        {
-          "path": "frontend/src/pages/EmployerJobList.tsx",
-          "operation": "modify",
-          "description": "Add 'View Candidates' action button to each job card that navigates to the JobCandidates page with the job ID. Show candidate count or match indicator (e.g., '15 matches available') on job cards. Only show 'View Candidates' for active jobs that need workers."
+          "description": "Create JobCandidates page for employers to review candidate matches for a specific job. Fetch job matches using useGetJobMatches hook. Display candidate cards showing worker information including verification badge using VerificationBadge component, reliability score, skills match percentage, and distance. Include actions to view full profile or assign worker to job. Use workerId from CandidateMatch to fetch badge data for each candidate."
         },
         {
           "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Add route definition for /employer/jobs/:jobId/candidates page. Wire JobCandidates component into the React Router configuration with job ID parameter. Ensure route is protected so only authenticated employers can access candidate matching. The route should be accessible from employer job list page."
+          "description": "Add route configuration for JobCandidates page at path '/employer/job/:jobId/candidates'. Wire route into employer section of router configuration."
         }
       ]
     },
     {
-      "id": "REQ-13",
-      "summary": "Design modern, professional, minimal UI with intuitive navigation optimized for ease of use, clean color scheme (avoiding blue/purple), large touch targets, and clear typography for varying literacy levels",
+      "id": "REQ-26",
+      "summary": "Add favorites management interface showing favorited workers with quick actions for hiring and removal",
       "acceptanceCriteria": [
-        "UI uses clean, minimal design with clear visual hierarchy",
-        "Color scheme is professional and avoids blue/purple",
-        "Navigation is intuitive with clear labels and icons",
-        "Touch targets are large enough for easy interaction",
-        "Typography is legible with appropriate font sizes",
-        "Interface is accessible for users with low digital literacy"
+        "Dedicated favorites page or section accessible from employer dashboard",
+        "Star/heart icon to add/remove workers from favorites in candidate lists",
+        "Favorites list displays worker cards with key information",
+        "Quick action buttons for hiring or removing favorites",
+        "Visual indicator showing which workers are already favorited"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/index.css",
+          "path": "frontend/src/hooks/useQueries.ts",
           "operation": "modify",
-          "description": "Update global styles to implement professional color scheme avoiding blue and purple. Define CSS custom properties (variables) for primary colors using earth tones, greens, oranges, or neutral grays. Set base typography with legible font sizes (minimum 16px for body text, larger for headings). Define spacing scale for consistent layout. Set touch-friendly minimum sizes for interactive elements (minimum 44x44px). Ensure high contrast ratios for text readability. Define global styles for buttons, inputs, cards, and common UI elements following minimal design principles."
+          "description": "Add useGetEmployerFavoriteWorkers query hook calling actor.getEmployerFavoriteWorkers(employerId) to fetch array of favorited worker IDs. Add useAddFavoriteWorker and useRemoveFavoriteWorker mutation hooks calling actor.addFavoriteWorker and actor.removeFavoriteWorker with appropriate cache invalidation for employer favorites list."
         },
         {
-          "path": "frontend/tailwind.config.js",
+          "path": "frontend/src/components/FavoriteToggle.tsx",
+          "operation": "create",
+          "description": "Create FavoriteToggle component rendering star/heart icon button to add or remove workers from favorites. Use frontend/public/assets/generated/icon-favorite.dim_64x64.png as icon asset. Accept workerId and isFavorited props. Use useAddFavoriteWorker and useRemoveFavoriteWorker mutations. Show filled icon when favorited, outlined when not. Include loading state during mutation."
+        },
+        {
+          "path": "frontend/src/pages/EmployerFavorites.tsx",
+          "operation": "create",
+          "description": "Create EmployerFavorites page displaying list of favorited workers. Use useGetEmployerFavoriteWorkers to fetch favorite worker IDs, then fetch full worker profiles for each ID using useGetWorkerProfile. Display worker cards showing name, skills, reliability score, verification badge, and completed jobs count. Include FavoriteToggle component for removal and action buttons to view full profile or navigate to job assignment. Show empty state with icon-favorite.dim_64x64.png when no favorites exist."
+        },
+        {
+          "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Configure Tailwind theme to match the design requirements. Customize color palette avoiding blue and purple - use earth tones, greens, oranges, browns, and neutral grays for primary, secondary, and accent colors. Set default font sizes with larger base (16px minimum). Configure spacing scale for generous touch targets. Define custom utilities for accessibility features. Extend default theme with project-specific design tokens. Ensure all color combinations meet WCAG AA contrast requirements."
+          "description": "Add route configuration for EmployerFavorites page at path '/employer/favorites'. Wire route into employer section of router configuration."
+        },
+        {
+          "path": "frontend/src/pages/JobCandidates.tsx",
+          "operation": "modify",
+          "description": "Integrate FavoriteToggle component into candidate cards. Use useGetEmployerFavoriteWorkers hook to determine which candidates are favorited. Pass workerId and isFavorited status to FavoriteToggle. Position toggle button prominently on each candidate card."
         },
         {
           "path": "frontend/src/components/Navigation.tsx",
-          "operation": "create",
-          "description": "Create main navigation component with intuitive, role-based menu structure. Show different navigation items based on user role (worker, employer, admin) using authorization context. Use clear text labels with optional icons for each nav item. Implement responsive navigation (hamburger menu for mobile, full menu for desktop). Use large touch targets (minimum 44x44px) for all navigation buttons. Include logout button in navigation. Apply consistent styling matching the design system. Position navigation prominently (top bar or side drawer). Ensure navigation is keyboard accessible."
+          "operation": "modify",
+          "description": "Add navigation link to favorites page in employer menu section. Use 'Favorites' label with heart icon indicator. Position between dashboard and job list links."
+        }
+      ]
+    },
+    {
+      "id": "REQ-28",
+      "summary": "Add job templates management interface for saving and reusing job posting configurations",
+      "acceptanceCriteria": [
+        "Save as template button on job creation form",
+        "Templates library page showing all saved templates with preview",
+        "Create from template action that pre-fills job posting form",
+        "Template name editing and deletion options",
+        "Visual confirmation when template is saved or used"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Add useGetJobTemplates query hook calling actor.getJobTemplates(employerId) to fetch array of JobTemplate objects. Add useSaveJobTemplate mutation hook calling actor.saveJobTemplate(template) with cache invalidation for templates list."
         },
         {
-          "path": "frontend/src/components/Layout.tsx",
+          "path": "frontend/src/pages/CreateJobPosting.tsx",
+          "operation": "modify",
+          "description": "Add 'Save as Template' button to job creation form. When clicked, show dialog prompting for template name. Use useSaveJobTemplate mutation to save current form values as JobTemplate including requiredSkills, wageAmount, duration, shiftTiming, workerCount, location, and jobDescription. Show success toast confirmation. Add 'Load from Template' button that opens template selection dialog. When template selected, pre-fill all form fields with template values."
+        },
+        {
+          "path": "frontend/src/pages/JobTemplates.tsx",
           "operation": "create",
-          "description": "Create main layout wrapper component that provides consistent structure across all pages. Include Navigation component at the top. Define main content area with appropriate padding and max-width for readability. Use the hero-banner.dim_1200x400.png image from frontend/public/assets/generated/ in the header for landing or welcome pages. Implement responsive layout that adapts to mobile, tablet, and desktop screens. Ensure consistent spacing and visual hierarchy. Include footer section if needed. Apply minimal, clean design principles throughout."
+          "description": "Create JobTemplates page displaying library of saved templates. Use useGetJobTemplates hook to fetch templates for current employer. Display template cards showing templateName, preview of skills, wage, duration, and shift timing. Include frontend/public/assets/generated/icon-template.dim_64x64.png as template icon. Provide 'Use Template' button that navigates to job creation page with template data. Show empty state with icon-template.dim_64x64.png when no templates exist."
         },
         {
           "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Wrap all routes with Layout component to ensure consistent navigation and design across the application. Update routing configuration to use Layout as a wrapper. Ensure proper page transitions and loading states. Apply authorization checks at the routing level to show appropriate pages based on user role."
+          "description": "Add route configuration for JobTemplates page at path '/employer/templates'. Wire route into employer section of router configuration."
         },
         {
-          "path": "frontend/src/pages/LandingPage.tsx",
-          "operation": "create",
-          "description": "Create landing page for unauthenticated users. Use the hero-banner.dim_1200x400.png image from frontend/public/assets/generated/ as a hero section showcasing the platform's value proposition. Include clear call-to-action buttons for 'Login as Worker' and 'Login as Employer' with appropriate icons (worker-icon.dim_128x128.png and employer-icon.dim_128x128.png from frontend/public/assets/generated/). Provide brief overview of platform features with simple, clear language. Use minimal design with generous whitespace. Ensure large, touch-friendly buttons. Make the page responsive and accessible for users with varying digital literacy."
+          "path": "frontend/src/components/Navigation.tsx",
+          "operation": "modify",
+          "description": "Add navigation link to templates page in employer menu section. Use 'Job Templates' label with document icon. Position in job management section."
+        }
+      ]
+    },
+    {
+      "id": "REQ-30",
+      "summary": "Build worker availability calendar interface with visual day/week/month views for managing availability",
+      "acceptanceCriteria": [
+        "Calendar view accessible from worker dashboard or profile",
+        "Day, week, and month view toggles",
+        "Click to toggle availability for specific dates",
+        "Visual distinction between available, unavailable, and scheduled days",
+        "Employers can view worker availability calendars when reviewing candidates"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Add useGetWorkerAvailability query hook calling actor.getWorkerAvailability(workerId) to fetch array of DayAvailability objects for 7-day week pattern. Add useUpdateWorkerAvailabilityWithPattern mutation hook calling actor.updateWorkerAvailabilityWithPattern with workerId and availability array, invalidating worker availability queries on success."
         },
         {
-          "path": "frontend/src/components/UserRoleSelector.tsx",
+          "path": "frontend/src/components/AvailabilityCalendar.tsx",
           "operation": "create",
-          "description": "Create role selection component shown after initial profile setup to determine if user is a worker or employer. Display two large, clearly labeled options with icons (worker-icon.dim_128x128.png and employer-icon.dim_128x128.png from frontend/public/assets/generated/). On selection, save the user's role using saveCallerUserProfile backend method with UserRole enum. Use large touch targets and clear visual design. Make the selection process simple and intuitive. Redirect to appropriate registration page (worker or employer) after role selection."
+          "description": "Create AvailabilityCalendar component displaying worker availability in calendar format. Use frontend/public/assets/generated/icon-calendar.dim_64x64.png for calendar header icon. Support week view showing 7-day pattern from DayAvailability array. For each day, render cell with visual indicators: green for available, red for unavailable, blue for scheduled jobs. Include click handlers to toggle availability when in edit mode. Accept workerId, editable boolean, and onUpdate callback props. Use useGetWorkerAvailability hook to fetch data. Display time ranges if specified in DayAvailability."
+        },
+        {
+          "path": "frontend/src/pages/WorkerAvailability.tsx",
+          "operation": "create",
+          "description": "Create WorkerAvailability page for workers to manage their availability patterns. Display AvailabilityCalendar in editable mode. Include 'Save Changes' button that calls useUpdateWorkerAvailabilityWithPattern with updated availability array. Show icon-calendar.dim_64x64.png in header. Provide legend explaining color coding for available, unavailable, and scheduled days. Include instructions for setting weekly availability pattern."
         },
         {
           "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Add route definition for landing page at root path (/). Wire LandingPage component as the default route for unauthenticated users. Implement routing logic that directs authenticated users to their role-specific dashboard (worker or employer) based on their profile. Show UserRoleSelector component if user is authenticated but hasn't selected a role yet. Ensure smooth navigation flow from landing to login to role selection to registration to dashboard."
+          "description": "Add route configuration for WorkerAvailability page at path '/worker/availability'. Wire route into worker section of router configuration."
+        },
+        {
+          "path": "frontend/src/components/Navigation.tsx",
+          "operation": "modify",
+          "description": "Add navigation link to availability page in worker menu section. Use 'My Availability' label with calendar icon. Position in worker dashboard section."
+        },
+        {
+          "path": "frontend/src/pages/JobCandidates.tsx",
+          "operation": "modify",
+          "description": "Integrate AvailabilityCalendar component into candidate detail view in read-only mode. For each candidate, show mini availability calendar or expandable section with full calendar. Display availability status clearly to help employers make scheduling decisions. Use workerId from candidate to fetch and display their availability pattern."
+        }
+      ]
+    },
+    {
+      "id": "REQ-31",
+      "summary": "Display worker availability calendars in employer candidate review interface for informed hiring decisions",
+      "acceptanceCriteria": [
+        "Mini calendar or availability indicator shown in candidate cards",
+        "Expandable calendar view showing worker availability for job duration",
+        "Availability status clearly marked (available/unavailable/partially available)",
+        "Filtering option to show only workers available for job dates"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/AvailabilityIndicator.tsx",
+          "operation": "create",
+          "description": "Create AvailabilityIndicator component showing compact availability status for a worker. Display icon-calendar.dim_64x64.png with color-coded badge indicating overall availability (green for mostly available, yellow for partial, red for unavailable). Accept workerId prop and use useGetWorkerAvailability hook to calculate status. Include expandable section that renders full AvailabilityCalendar component when clicked. Use in candidate cards for quick availability assessment."
+        },
+        {
+          "path": "frontend/src/pages/JobCandidates.tsx",
+          "operation": "modify",
+          "description": "Add AvailabilityIndicator component to each candidate card showing availability status at a glance. Include filter controls to show only candidates with specific availability status (available/unavailable/partial). Add sort option to prioritize candidates by availability match. Display availability prominently alongside reliability score and skills match."
+        }
+      ]
+    },
+    {
+      "id": "REQ-33",
+      "summary": "Build in-app notification center displaying shift reminders, job confirmations, and alerts with unread badge",
+      "acceptanceCriteria": [
+        "Notification bell icon in navigation with unread count badge",
+        "Dropdown or dedicated page showing notification list",
+        "Notifications display message, timestamp, and read/unread status",
+        "Click to mark notification as read",
+        "Clear visual design distinguishing different notification types",
+        "Reminders show for jobs starting within 24 hours"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Add useGetJobReminders query hook calling actor.getJobReminders(jobId) to fetch array of JobReminders objects. Since backend returns reminders per job, create a custom hook useGetWorkerNotifications that fetches reminders for all worker's assigned jobs and aggregates them into notification objects. Poll with refetchInterval for periodic updates."
+        },
+        {
+          "path": "frontend/src/components/NotificationBell.tsx",
+          "operation": "create",
+          "description": "Create NotificationBell component rendering bell icon button with unread count badge. Use frontend/public/assets/generated/icon-notification.dim_64x64.png as bell icon. Fetch notifications using useGetWorkerNotifications hook. Calculate unread count from notifications array. Display badge with count when unread notifications exist. Include dropdown or click handler to open notification center. Position in navigation header for workers."
+        },
+        {
+          "path": "frontend/src/components/NotificationList.tsx",
+          "operation": "create",
+          "description": "Create NotificationList component displaying list of notifications. Accept notifications array prop containing reminder data. For each notification, display message text, timestamp formatted as relative time, and read/unread visual indicator. Distinguish notification types (reminder for upcoming shift, job confirmation, update/cancellation) with different icons or colors. Show icon-notification.dim_64x64.png for header. Include 'Mark as Read' action using useUpdateJobReminders mutation. Sort by timestamp descending. Show empty state when no notifications."
+        },
+        {
+          "path": "frontend/src/pages/WorkerNotifications.tsx",
+          "operation": "create",
+          "description": "Create WorkerNotifications dedicated page displaying full notification center. Use NotificationList component to show all notifications. Include filter tabs for all/unread/reminders/confirmations. Display icon-notification.dim_64x64.png in page header. Show notification count summary. Provide 'Mark All as Read' bulk action. Include refresh button to manually fetch latest notifications."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Add route configuration for WorkerNotifications page at path '/worker/notifications'. Wire route into worker section of router configuration."
+        },
+        {
+          "path": "frontend/src/components/Navigation.tsx",
+          "operation": "modify",
+          "description": "Integrate NotificationBell component into navigation header for worker role. Position bell icon in header toolbar area near user profile or logout button. Ensure bell is visible on all worker pages. Add navigation link to full notifications page when bell is clicked or as menu item."
+        },
+        {
+          "path": "frontend/src/pages/WorkerDashboard.tsx",
+          "operation": "create",
+          "description": "Create WorkerDashboard page if it doesn't exist, or modify existing to include notifications summary widget. Display recent notifications (last 3-5) using NotificationList component. Show 'View All' link to WorkerNotifications page. Include quick stats about upcoming shifts and reminders. Position notifications prominently on dashboard."
         }
       ]
     }

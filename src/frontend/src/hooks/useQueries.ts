@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './useActor';
+import { useInternetIdentity } from './useInternetIdentity';
 import type {
   UserProfile,
   WorkerProfile,
@@ -8,11 +9,15 @@ import type {
   CandidateMatch,
   PaymentRecord,
   SystemMetrics,
-  Skill,
-  ExperienceLevel,
+  SkillWithExperience,
   WageRange,
   Coordinates,
-  UserRole,
+  PaymentMethod,
+  VerifiedWorker,
+  JobTemplate,
+  DayAvailability,
+  AvailabilityRequest,
+  JobReminders,
 } from '../backend';
 
 // User Profile Queries
@@ -86,8 +91,7 @@ export function useCreateWorkerProfile() {
     mutationFn: async (data: {
       name: string;
       mobileNumber: string;
-      skills: Skill[];
-      experienceLevel: ExperienceLevel;
+      skills: SkillWithExperience[];
       wageRange: WageRange;
       coordinates: Coordinates;
     }) => {
@@ -96,7 +100,6 @@ export function useCreateWorkerProfile() {
         data.name,
         data.mobileNumber,
         data.skills,
-        data.experienceLevel,
         data.wageRange,
         data.coordinates
       );
@@ -158,7 +161,7 @@ export function useCreateJobPosting() {
 
   return useMutation({
     mutationFn: async (data: {
-      requiredSkills: Skill[];
+      requiredSkills: SkillWithExperience[];
       wageAmount: number;
       duration: number;
       shiftTiming: string;
@@ -309,30 +312,22 @@ export function useRateWorker() {
 }
 
 // Payment Queries
-export function useGetWorkerPaymentHistory(workerId: string | undefined) {
-  const { actor, isFetching: actorFetching } = useActor();
-
-  return useQuery<PaymentRecord[]>({
-    queryKey: ['workerPaymentHistory', workerId],
-    queryFn: async () => {
-      if (!actor || !workerId) throw new Error('Actor or workerId not available');
-      return actor.getWorkerPaymentHistory(workerId);
-    },
-    enabled: !!actor && !actorFetching && !!workerId,
-  });
-}
-
 export function useRecordPayment() {
   const { actor } = useActor();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: { workerId: string; jobId: string; amount: number }) => {
+    mutationFn: async (data: {
+      workerId: string;
+      jobId: string;
+      amount: number;
+      paymentMethod: PaymentMethod;
+    }) => {
       if (!actor) throw new Error('Actor not available');
-      return actor.recordPayment(data.workerId, data.jobId, data.amount);
+      return actor.recordPayment(data.workerId, data.jobId, data.amount, data.paymentMethod);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['workerPaymentHistory'] });
+      queryClient.invalidateQueries({ queryKey: ['myWorkerProfile'] });
     },
   });
 }
@@ -361,5 +356,186 @@ export function useIsCallerAdmin() {
       return actor.isCallerAdmin();
     },
     enabled: !!actor && !actorFetching,
+  });
+}
+
+// Verified Worker (Badge) Queries
+export function useGetVerifiedWorker(workerId: string | undefined) {
+  const { actor, isFetching: actorFetching } = useActor();
+
+  return useQuery<VerifiedWorker | null>({
+    queryKey: ['verifiedWorker', workerId],
+    queryFn: async () => {
+      if (!actor || !workerId) return null;
+      return actor.getVerifiedWorker(workerId);
+    },
+    enabled: !!actor && !actorFetching && !!workerId,
+  });
+}
+
+// Employer Favorites Queries
+export function useGetEmployerFavoriteWorkers() {
+  const { actor, isFetching: actorFetching } = useActor();
+  const { identity } = useInternetIdentity();
+
+  return useQuery<string[]>({
+    queryKey: ['employerFavorites', identity?.getPrincipal().toString()],
+    queryFn: async () => {
+      if (!actor || !identity) return [];
+      return actor.getEmployerFavoriteWorkers(identity.getPrincipal());
+    },
+    enabled: !!actor && !actorFetching && !!identity,
+  });
+}
+
+export function useAddFavoriteWorker() {
+  const { actor } = useActor();
+  const { identity } = useInternetIdentity();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (workerId: string) => {
+      if (!actor || !identity) throw new Error('Actor or identity not available');
+      return actor.addFavoriteWorker(identity.getPrincipal(), workerId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['employerFavorites'] });
+    },
+  });
+}
+
+export function useRemoveFavoriteWorker() {
+  const { actor } = useActor();
+  const { identity } = useInternetIdentity();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (workerId: string) => {
+      if (!actor || !identity) throw new Error('Actor or identity not available');
+      return actor.removeFavoriteWorker(identity.getPrincipal(), workerId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['employerFavorites'] });
+    },
+  });
+}
+
+// Job Templates Queries
+export function useGetJobTemplates() {
+  const { actor, isFetching: actorFetching } = useActor();
+  const { identity } = useInternetIdentity();
+
+  return useQuery<JobTemplate[]>({
+    queryKey: ['jobTemplates', identity?.getPrincipal().toString()],
+    queryFn: async () => {
+      if (!actor || !identity) return [];
+      return actor.getJobTemplates(identity.getPrincipal());
+    },
+    enabled: !!actor && !actorFetching && !!identity,
+  });
+}
+
+export function useSaveJobTemplate() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (template: JobTemplate) => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.saveJobTemplate(template);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['jobTemplates'] });
+    },
+  });
+}
+
+// Worker Availability Queries
+export function useGetWorkerAvailability(workerId: string | undefined) {
+  const { actor, isFetching: actorFetching } = useActor();
+
+  return useQuery<DayAvailability[]>({
+    queryKey: ['workerAvailability', workerId],
+    queryFn: async () => {
+      if (!actor || !workerId) return [];
+      return actor.getWorkerAvailability(workerId);
+    },
+    enabled: !!actor && !actorFetching && !!workerId,
+  });
+}
+
+export function useUpdateWorkerAvailabilityWithPattern() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: { workerId: string; availability: AvailabilityRequest[] }) => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.updateWorkerAvailabilityWithPattern(data.workerId, data.availability);
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['workerAvailability', variables.workerId] });
+    },
+  });
+}
+
+// Job Reminders Queries
+export function useGetJobReminders(jobId: string | undefined) {
+  const { actor, isFetching: actorFetching } = useActor();
+
+  return useQuery<JobReminders[]>({
+    queryKey: ['jobReminders', jobId],
+    queryFn: async () => {
+      if (!actor || !jobId) return [];
+      return actor.getJobReminders(jobId);
+    },
+    enabled: !!actor && !actorFetching && !!jobId,
+    refetchInterval: 30000, // Poll every 30 seconds
+  });
+}
+
+export function useUpdateJobReminders() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (reminder: JobReminders) => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.updateJobReminders(reminder);
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['jobReminders', variables.jobId] });
+    },
+  });
+}
+
+// Worker Notifications (aggregated from job reminders)
+export function useGetWorkerNotifications() {
+  const { actor, isFetching: actorFetching } = useActor();
+  const { data: workerProfile } = useGetMyWorkerProfile();
+
+  return useQuery<JobReminders[]>({
+    queryKey: ['workerNotifications'],
+    queryFn: async () => {
+      if (!actor || !workerProfile) return [];
+      
+      // Get all jobs assigned to this worker
+      const allJobs = await actor.getAllJobPostings();
+      const assignedJobs = allJobs.filter(job => 
+        job.assignedWorkers.includes(workerProfile.id)
+      );
+
+      // Fetch reminders for all assigned jobs
+      const remindersPromises = assignedJobs.map(job => 
+        actor.getJobReminders(job.id)
+      );
+      const remindersArrays = await Promise.all(remindersPromises);
+      
+      // Flatten and filter for this worker
+      const allReminders = remindersArrays.flat();
+      return allReminders.filter(r => r.workerId === workerProfile.id);
+    },
+    enabled: !!actor && !actorFetching && !!workerProfile,
+    refetchInterval: 30000, // Poll every 30 seconds
   });
 }

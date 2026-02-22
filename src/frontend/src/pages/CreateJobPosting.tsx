@@ -1,20 +1,24 @@
 import { useNavigate } from '@tanstack/react-router';
 import { useInternetIdentity } from '../hooks/useInternetIdentity';
-import { useCreateJobPosting } from '../hooks/useQueries';
+import { useCreateJobPosting, useSaveJobTemplate, useGetJobTemplates } from '../hooks/useQueries';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Textarea } from '../components/ui/textarea';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
 import SkillsMultiSelect from '../components/SkillsMultiSelect';
 import { useState, useEffect } from 'react';
-import { Skill } from '../backend';
-import { Briefcase, ArrowRight } from 'lucide-react';
+import { Skill, SkillWithExperience, ExperienceLevel, JobTemplate } from '../backend';
+import { ArrowRight, Save, FileText } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function CreateJobPosting() {
   const navigate = useNavigate();
   const { identity } = useInternetIdentity();
   const createJob = useCreateJobPosting();
+  const saveTemplate = useSaveJobTemplate();
+  const { data: templates } = useGetJobTemplates();
 
   const [requiredSkills, setRequiredSkills] = useState<Skill[]>([]);
   const [wageAmount, setWageAmount] = useState('');
@@ -24,6 +28,9 @@ export default function CreateJobPosting() {
   const [latitude, setLatitude] = useState('');
   const [longitude, setLongitude] = useState('');
   const [jobDescription, setJobDescription] = useState('');
+  const [templateName, setTemplateName] = useState('');
+  const [saveAsTemplateOpen, setSaveAsTemplateOpen] = useState(false);
+  const [loadTemplateOpen, setLoadTemplateOpen] = useState(false);
 
   useEffect(() => {
     if (!identity) {
@@ -52,8 +59,15 @@ export default function CreateJobPosting() {
     e.preventDefault();
 
     try {
+      const skillsWithExperience: SkillWithExperience[] = requiredSkills.map((skill) => ({
+        skill,
+        experienceLevel: 'novice' as ExperienceLevel,
+        yearsOfExperience: BigInt(1),
+        certificationStatus: [],
+      }));
+
       const jobId = await createJob.mutateAsync({
-        requiredSkills,
+        requiredSkills: skillsWithExperience,
         wageAmount: parseFloat(wageAmount),
         duration: parseFloat(duration),
         shiftTiming,
@@ -65,12 +79,65 @@ export default function CreateJobPosting() {
         jobDescription,
       });
 
-      alert(`Job posted successfully! Job ID: ${jobId}`);
+      toast.success(`Job posted successfully! Job ID: ${jobId}`);
       navigate({ to: '/employer/jobs' });
     } catch (error) {
       console.error('Error creating job:', error);
-      alert('Failed to create job. Please try again.');
+      toast.error('Failed to create job. Please try again.');
     }
+  };
+
+  const handleSaveAsTemplate = async () => {
+    if (!identity || !templateName.trim()) {
+      toast.error('Please enter a template name');
+      return;
+    }
+
+    try {
+      const skillsWithExperience: SkillWithExperience[] = requiredSkills.map((skill) => ({
+        skill,
+        experienceLevel: 'novice' as ExperienceLevel,
+        yearsOfExperience: BigInt(1),
+        certificationStatus: [],
+      }));
+
+      const template: JobTemplate = {
+        templateId: `T${Date.now()}`,
+        employerId: identity.getPrincipal(),
+        templateName,
+        requiredSkills: skillsWithExperience,
+        wageAmount: parseFloat(wageAmount) || 0,
+        duration: parseFloat(duration) || 0,
+        shiftTiming: shiftTiming || '',
+        workerCount: BigInt(workerCount || 0),
+        location: {
+          latitude: parseFloat(latitude) || 0,
+          longitude: parseFloat(longitude) || 0,
+        },
+        jobDescription: jobDescription || '',
+      };
+
+      await saveTemplate.mutateAsync(template);
+      toast.success('Template saved successfully!');
+      setSaveAsTemplateOpen(false);
+      setTemplateName('');
+    } catch (error) {
+      console.error('Error saving template:', error);
+      toast.error('Failed to save template');
+    }
+  };
+
+  const handleLoadTemplate = (template: JobTemplate) => {
+    setRequiredSkills(template.requiredSkills.map((s) => s.skill));
+    setWageAmount(template.wageAmount.toString());
+    setDuration(template.duration.toString());
+    setShiftTiming(template.shiftTiming);
+    setWorkerCount(template.workerCount.toString());
+    setLatitude(template.location.latitude.toString());
+    setLongitude(template.location.longitude.toString());
+    setJobDescription(template.jobDescription);
+    setLoadTemplateOpen(false);
+    toast.success('Template loaded successfully!');
   };
 
   return (
@@ -90,8 +157,88 @@ export default function CreateJobPosting() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Job Details</CardTitle>
-            <CardDescription>Fill in the job requirements and details</CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Job Details</CardTitle>
+                <CardDescription>Fill in the job requirements and details</CardDescription>
+              </div>
+              <div className="flex gap-2">
+                <Dialog open={loadTemplateOpen} onOpenChange={setLoadTemplateOpen}>
+                  <DialogTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      <FileText className="h-4 w-4 mr-2" />
+                      Load Template
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Load from Template</DialogTitle>
+                      <DialogDescription>
+                        Select a template to pre-fill the form
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-2 max-h-[400px] overflow-y-auto">
+                      {templates && templates.length > 0 ? (
+                        templates.map((template) => (
+                          <Card
+                            key={template.templateId}
+                            className="cursor-pointer hover:bg-muted transition-colors"
+                            onClick={() => handleLoadTemplate(template)}
+                          >
+                            <CardContent className="p-4">
+                              <p className="font-semibold">{template.templateName}</p>
+                              <p className="text-sm text-muted-foreground">
+                                {template.requiredSkills.length} skills • ₹{template.wageAmount}/day
+                              </p>
+                            </CardContent>
+                          </Card>
+                        ))
+                      ) : (
+                        <p className="text-center text-muted-foreground py-8">
+                          No templates saved yet
+                        </p>
+                      )}
+                    </div>
+                  </DialogContent>
+                </Dialog>
+
+                <Dialog open={saveAsTemplateOpen} onOpenChange={setSaveAsTemplateOpen}>
+                  <DialogTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      <Save className="h-4 w-4 mr-2" />
+                      Save as Template
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Save as Template</DialogTitle>
+                      <DialogDescription>
+                        Give your template a name to save it for future use
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      <div>
+                        <Label htmlFor="templateName">Template Name</Label>
+                        <Input
+                          id="templateName"
+                          placeholder="e.g., Construction Site Template"
+                          value={templateName}
+                          onChange={(e) => setTemplateName(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button
+                        onClick={handleSaveAsTemplate}
+                        disabled={saveTemplate.isPending || !templateName.trim()}
+                      >
+                        {saveTemplate.isPending ? 'Saving...' : 'Save Template'}
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </div>
+            </div>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">

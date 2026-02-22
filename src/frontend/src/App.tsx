@@ -13,6 +13,15 @@ import AttendanceScanner from './pages/AttendanceScanner';
 import WorkHistory from './pages/WorkHistory';
 import WorkerWallet from './pages/WorkerWallet';
 import EmployerDashboard from './pages/EmployerDashboard';
+import EmployerAnalytics from './pages/EmployerAnalytics';
+import AdminDashboard from './pages/AdminDashboard';
+import SubscriptionTiers from './pages/SubscriptionTiers';
+import BulkJobUpload from './pages/BulkJobUpload';
+import JobCandidates from './pages/JobCandidates';
+import EmployerFavorites from './pages/EmployerFavorites';
+import JobTemplates from './pages/JobTemplates';
+import WorkerAvailability from './pages/WorkerAvailability';
+import WorkerNotifications from './pages/WorkerNotifications';
 
 const rootRoute = createRootRoute({
   component: () => (
@@ -64,6 +73,18 @@ const workerWalletRoute = createRoute({
   component: WorkerWallet,
 });
 
+const workerAvailabilityRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/worker/availability',
+  component: WorkerAvailability,
+});
+
+const workerNotificationsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/worker/notifications',
+  component: WorkerNotifications,
+});
+
 const employerRegisterRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/employer/register',
@@ -82,6 +103,18 @@ const employerDashboardRoute = createRoute({
   component: EmployerDashboard,
 });
 
+const employerAnalyticsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/employer/analytics',
+  component: EmployerAnalytics,
+});
+
+const employerSubscriptionRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/employer/subscription',
+  component: SubscriptionTiers,
+});
+
 const createJobRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/employer/jobs/create',
@@ -94,10 +127,40 @@ const employerJobsRoute = createRoute({
   component: EmployerJobList,
 });
 
+const bulkJobUploadRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/employer/bulk-upload',
+  component: BulkJobUpload,
+});
+
 const attendanceScannerRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/employer/attendance',
   component: AttendanceScanner,
+});
+
+const jobCandidatesRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/employer/job/$jobId/candidates',
+  component: JobCandidates,
+});
+
+const employerFavoritesRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/employer/favorites',
+  component: EmployerFavorites,
+});
+
+const jobTemplatesRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/employer/templates',
+  component: JobTemplates,
+});
+
+const adminDashboardRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/admin/dashboard',
+  component: AdminDashboard,
 });
 
 const routeTree = rootRoute.addChildren([
@@ -108,12 +171,21 @@ const routeTree = rootRoute.addChildren([
   workerJobsRoute,
   workerHistoryRoute,
   workerWalletRoute,
+  workerAvailabilityRoute,
+  workerNotificationsRoute,
   employerRegisterRoute,
   employerProfileRoute,
   employerDashboardRoute,
+  employerAnalyticsRoute,
+  employerSubscriptionRoute,
   createJobRoute,
   employerJobsRoute,
+  bulkJobUploadRoute,
   attendanceScannerRoute,
+  jobCandidatesRoute,
+  employerFavoritesRoute,
+  jobTemplatesRoute,
+  adminDashboardRoute,
 ]);
 
 const router = createRouter({ routeTree });

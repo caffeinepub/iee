@@ -3,14 +3,15 @@ import { useInternetIdentity } from '../hooks/useInternetIdentity';
 import { useGetCallerUserProfile, useIsCallerAdmin } from '../hooks/useQueries';
 import { useQueryClient } from '@tanstack/react-query';
 import { Button } from './ui/button';
-import { Menu, X, Briefcase, Users, LayoutDashboard, LogOut, LogIn } from 'lucide-react';
+import { Menu, X, Briefcase, LogOut, LogIn, Heart, FileText, Calendar } from 'lucide-react';
 import { useState } from 'react';
+import NotificationBell from './NotificationBell';
 
 export default function Navigation() {
   const navigate = useNavigate();
   const { identity, login, clear, isLoggingIn } = useInternetIdentity();
   const queryClient = useQueryClient();
-  const { data: userProfile, isLoading: profileLoading } = useGetCallerUserProfile();
+  const { data: userProfile } = useGetCallerUserProfile();
   const { data: isAdmin } = useIsCallerAdmin();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -56,25 +57,32 @@ export default function Navigation() {
                   <>
                     <button
                       onClick={() => navigate({ to: '/worker/jobs' })}
-                      className="text-sm font-medium hover:text-primary transition-colors"
+                      className="text-base font-medium hover:text-primary transition-colors"
                     >
                       Find Jobs
                     </button>
                     <button
                       onClick={() => navigate({ to: '/worker/profile' })}
-                      className="text-sm font-medium hover:text-primary transition-colors"
+                      className="text-base font-medium hover:text-primary transition-colors"
                     >
                       My Profile
                     </button>
                     <button
+                      onClick={() => navigate({ to: '/worker/availability' })}
+                      className="text-base font-medium hover:text-primary transition-colors flex items-center gap-1"
+                    >
+                      <Calendar className="h-4 w-4" />
+                      Availability
+                    </button>
+                    <button
                       onClick={() => navigate({ to: '/worker/history' })}
-                      className="text-sm font-medium hover:text-primary transition-colors"
+                      className="text-base font-medium hover:text-primary transition-colors"
                     >
                       Work History
                     </button>
                     <button
                       onClick={() => navigate({ to: '/worker/wallet' })}
-                      className="text-sm font-medium hover:text-primary transition-colors"
+                      className="text-base font-medium hover:text-primary transition-colors"
                     >
                       Wallet
                     </button>
@@ -85,35 +93,54 @@ export default function Navigation() {
                   <>
                     <button
                       onClick={() => navigate({ to: '/employer/dashboard' })}
-                      className="text-sm font-medium hover:text-primary transition-colors"
+                      className="text-base font-medium hover:text-primary transition-colors"
                     >
                       Dashboard
                     </button>
                     <button
                       onClick={() => navigate({ to: '/employer/jobs' })}
-                      className="text-sm font-medium hover:text-primary transition-colors"
+                      className="text-base font-medium hover:text-primary transition-colors"
                     >
-                      My Jobs
+                      Jobs
                     </button>
                     <button
-                      onClick={() => navigate({ to: '/employer/jobs/create' })}
-                      className="text-sm font-medium hover:text-primary transition-colors"
+                      onClick={() => navigate({ to: '/employer/favorites' })}
+                      className="text-base font-medium hover:text-primary transition-colors flex items-center gap-1"
                     >
-                      Post Job
+                      <Heart className="h-4 w-4" />
+                      Favorites
                     </button>
                     <button
-                      onClick={() => navigate({ to: '/employer/attendance' })}
-                      className="text-sm font-medium hover:text-primary transition-colors"
+                      onClick={() => navigate({ to: '/employer/templates' })}
+                      className="text-base font-medium hover:text-primary transition-colors flex items-center gap-1"
                     >
-                      Attendance
+                      <FileText className="h-4 w-4" />
+                      Templates
+                    </button>
+                    <button
+                      onClick={() => navigate({ to: '/employer/analytics' })}
+                      className="text-base font-medium hover:text-primary transition-colors"
+                    >
+                      Analytics
                     </button>
                   </>
+                )}
+
+                {isAdmin && (
+                  <button
+                    onClick={() => navigate({ to: '/admin/dashboard' })}
+                    className="text-base font-medium hover:text-primary transition-colors"
+                  >
+                    Admin
+                  </button>
                 )}
               </nav>
             )}
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+            {isAuthenticated && isWorker && <NotificationBell />}
+            
             <Button
               onClick={handleAuth}
               disabled={isLoggingIn}
@@ -138,8 +165,7 @@ export default function Navigation() {
 
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 hover:bg-accent rounded-md transition-colors"
-              aria-label="Toggle menu"
+              className="md:hidden p-2 hover:bg-muted rounded-lg transition-colors"
             >
               {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
@@ -147,8 +173,8 @@ export default function Navigation() {
         </div>
 
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-border py-4">
-            <nav className="flex flex-col gap-4">
+          <div className="md:hidden py-4 border-t border-border">
+            <nav className="flex flex-col gap-3">
               {isAuthenticated && userProfile && (
                 <>
                   {isWorker && (
@@ -158,7 +184,7 @@ export default function Navigation() {
                           navigate({ to: '/worker/jobs' });
                           setMobileMenuOpen(false);
                         }}
-                        className="text-left px-4 py-2 hover:bg-accent rounded-md transition-colors"
+                        className="text-base font-medium hover:text-primary transition-colors text-left px-2 py-1"
                       >
                         Find Jobs
                       </button>
@@ -167,16 +193,25 @@ export default function Navigation() {
                           navigate({ to: '/worker/profile' });
                           setMobileMenuOpen(false);
                         }}
-                        className="text-left px-4 py-2 hover:bg-accent rounded-md transition-colors"
+                        className="text-base font-medium hover:text-primary transition-colors text-left px-2 py-1"
                       >
                         My Profile
+                      </button>
+                      <button
+                        onClick={() => {
+                          navigate({ to: '/worker/availability' });
+                          setMobileMenuOpen(false);
+                        }}
+                        className="text-base font-medium hover:text-primary transition-colors text-left px-2 py-1"
+                      >
+                        Availability
                       </button>
                       <button
                         onClick={() => {
                           navigate({ to: '/worker/history' });
                           setMobileMenuOpen(false);
                         }}
-                        className="text-left px-4 py-2 hover:bg-accent rounded-md transition-colors"
+                        className="text-base font-medium hover:text-primary transition-colors text-left px-2 py-1"
                       >
                         Work History
                       </button>
@@ -185,9 +220,18 @@ export default function Navigation() {
                           navigate({ to: '/worker/wallet' });
                           setMobileMenuOpen(false);
                         }}
-                        className="text-left px-4 py-2 hover:bg-accent rounded-md transition-colors"
+                        className="text-base font-medium hover:text-primary transition-colors text-left px-2 py-1"
                       >
                         Wallet
+                      </button>
+                      <button
+                        onClick={() => {
+                          navigate({ to: '/worker/notifications' });
+                          setMobileMenuOpen(false);
+                        }}
+                        className="text-base font-medium hover:text-primary transition-colors text-left px-2 py-1"
+                      >
+                        Notifications
                       </button>
                     </>
                   )}
@@ -199,7 +243,7 @@ export default function Navigation() {
                           navigate({ to: '/employer/dashboard' });
                           setMobileMenuOpen(false);
                         }}
-                        className="text-left px-4 py-2 hover:bg-accent rounded-md transition-colors"
+                        className="text-base font-medium hover:text-primary transition-colors text-left px-2 py-1"
                       >
                         Dashboard
                       </button>
@@ -208,29 +252,50 @@ export default function Navigation() {
                           navigate({ to: '/employer/jobs' });
                           setMobileMenuOpen(false);
                         }}
-                        className="text-left px-4 py-2 hover:bg-accent rounded-md transition-colors"
+                        className="text-base font-medium hover:text-primary transition-colors text-left px-2 py-1"
                       >
-                        My Jobs
+                        Jobs
                       </button>
                       <button
                         onClick={() => {
-                          navigate({ to: '/employer/jobs/create' });
+                          navigate({ to: '/employer/favorites' });
                           setMobileMenuOpen(false);
                         }}
-                        className="text-left px-4 py-2 hover:bg-accent rounded-md transition-colors"
+                        className="text-base font-medium hover:text-primary transition-colors text-left px-2 py-1"
                       >
-                        Post Job
+                        Favorites
                       </button>
                       <button
                         onClick={() => {
-                          navigate({ to: '/employer/attendance' });
+                          navigate({ to: '/employer/templates' });
                           setMobileMenuOpen(false);
                         }}
-                        className="text-left px-4 py-2 hover:bg-accent rounded-md transition-colors"
+                        className="text-base font-medium hover:text-primary transition-colors text-left px-2 py-1"
                       >
-                        Attendance
+                        Templates
+                      </button>
+                      <button
+                        onClick={() => {
+                          navigate({ to: '/employer/analytics' });
+                          setMobileMenuOpen(false);
+                        }}
+                        className="text-base font-medium hover:text-primary transition-colors text-left px-2 py-1"
+                      >
+                        Analytics
                       </button>
                     </>
+                  )}
+
+                  {isAdmin && (
+                    <button
+                      onClick={() => {
+                        navigate({ to: '/admin/dashboard' });
+                        setMobileMenuOpen(false);
+                      }}
+                      className="text-base font-medium hover:text-primary transition-colors text-left px-2 py-1"
+                    >
+                      Admin
+                    </button>
                   )}
                 </>
               )}
@@ -242,9 +307,22 @@ export default function Navigation() {
                 }}
                 disabled={isLoggingIn}
                 variant={isAuthenticated ? 'outline' : 'default'}
-                className="w-full"
+                size="default"
+                className="w-full justify-start"
               >
-                {isLoggingIn ? 'Logging in...' : isAuthenticated ? 'Logout' : 'Login'}
+                {isLoggingIn ? (
+                  'Logging in...'
+                ) : isAuthenticated ? (
+                  <>
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Logout
+                  </>
+                ) : (
+                  <>
+                    <LogIn className="h-4 w-4 mr-2" />
+                    Login
+                  </>
+                )}
               </Button>
             </nav>
           </div>

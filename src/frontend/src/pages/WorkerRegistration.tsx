@@ -5,11 +5,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../co
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import SkillsMultiSelect from '../components/SkillsMultiSelect';
 import { useState, useEffect } from 'react';
-import { Skill, ExperienceLevel } from '../backend';
-import { ArrowRight } from 'lucide-react';
+import { Skill, SkillWithExperience, ExperienceLevel } from '../backend';
+import { UserCircle, ArrowRight } from 'lucide-react';
 
 export default function WorkerRegistration() {
   const navigate = useNavigate();
@@ -17,9 +16,9 @@ export default function WorkerRegistration() {
   const { data: userProfile } = useGetCallerUserProfile();
   const createProfile = useCreateWorkerProfile();
 
+  const [name, setName] = useState('');
   const [mobileNumber, setMobileNumber] = useState('');
   const [skills, setSkills] = useState<Skill[]>([]);
-  const [experienceLevel, setExperienceLevel] = useState<ExperienceLevel>('novice' as ExperienceLevel);
   const [minWage, setMinWage] = useState('');
   const [maxWage, setMaxWage] = useState('');
   const [latitude, setLatitude] = useState('');
@@ -31,37 +30,11 @@ export default function WorkerRegistration() {
     }
   }, [identity, navigate]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!userProfile?.name) {
-      alert('User profile not found. Please complete role selection first.');
-      return;
+  useEffect(() => {
+    if (userProfile?.name) {
+      setName(userProfile.name);
     }
-
-    try {
-      const workerId = await createProfile.mutateAsync({
-        name: userProfile.name,
-        mobileNumber,
-        skills,
-        experienceLevel,
-        wageRange: {
-          min: parseFloat(minWage),
-          max: parseFloat(maxWage),
-        },
-        coordinates: {
-          latitude: parseFloat(latitude),
-          longitude: parseFloat(longitude),
-        },
-      });
-
-      alert(`Profile created successfully! Your Worker ID is: ${workerId}`);
-      navigate({ to: '/worker/profile' });
-    } catch (error) {
-      console.error('Error creating profile:', error);
-      alert('Failed to create profile. Please try again.');
-    }
-  };
+  }, [userProfile]);
 
   const handleGetLocation = () => {
     if (navigator.geolocation) {
@@ -80,27 +53,81 @@ export default function WorkerRegistration() {
     }
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      // Convert Skill[] to SkillWithExperience[]
+      const skillsWithExperience: SkillWithExperience[] = skills.map((skill) => ({
+        skill,
+        experienceLevel: 'novice' as ExperienceLevel,
+        yearsOfExperience: BigInt(1),
+        certificationStatus: [],
+      }));
+
+      const workerId = await createProfile.mutateAsync({
+        name,
+        mobileNumber,
+        skills: skillsWithExperience,
+        wageRange: {
+          min: parseFloat(minWage),
+          max: parseFloat(maxWage),
+        },
+        coordinates: {
+          latitude: parseFloat(latitude),
+          longitude: parseFloat(longitude),
+        },
+      });
+
+      alert(`Worker profile created successfully! Your Worker ID: ${workerId}`);
+      navigate({ to: '/worker/profile' });
+    } catch (error) {
+      console.error('Error creating profile:', error);
+      alert('Failed to create profile. Please try again.');
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-12">
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-3xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold mb-2">Worker Registration</h1>
-          <p className="text-muted-foreground">Complete your profile to start finding jobs</p>
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <img
+              src="/assets/generated/worker-icon.dim_128x128.png"
+              alt="Worker Registration"
+              className="w-16 h-16"
+            />
+            <h1 className="text-4xl font-bold">Worker Registration</h1>
+          </div>
+          <p className="text-muted-foreground">Create your worker profile to start finding jobs</p>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>Profile Information</CardTitle>
+            <CardTitle>Personal Information</CardTitle>
             <CardDescription>Fill in your details to create your worker profile</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
+                <Label htmlFor="name">Full Name *</Label>
+                <Input
+                  id="name"
+                  type="text"
+                  placeholder="John Doe"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                  className="h-12"
+                />
+              </div>
+
+              <div className="space-y-2">
                 <Label htmlFor="mobile">Mobile Number *</Label>
                 <Input
                   id="mobile"
                   type="tel"
-                  placeholder="+1234567890"
+                  placeholder="+91 9876543210"
                   value={mobileNumber}
                   onChange={(e) => setMobileNumber(e.target.value)}
                   required
@@ -114,26 +141,11 @@ export default function WorkerRegistration() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="experience">Experience Level *</Label>
-                <Select value={experienceLevel} onValueChange={(value) => setExperienceLevel(value as ExperienceLevel)}>
-                  <SelectTrigger className="h-12">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="novice">Novice (0-2 years)</SelectItem>
-                    <SelectItem value="intermediate">Intermediate (2-5 years)</SelectItem>
-                    <SelectItem value="expert">Expert (5+ years)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="minWage">Minimum Wage (₹/day) *</Label>
+                <Label>Wage Range (₹/day) *</Label>
+                <div className="grid grid-cols-2 gap-4">
                   <Input
-                    id="minWage"
                     type="number"
-                    placeholder="500"
+                    placeholder="Min (e.g., 500)"
                     value={minWage}
                     onChange={(e) => setMinWage(e.target.value)}
                     required
@@ -141,13 +153,9 @@ export default function WorkerRegistration() {
                     step="50"
                     className="h-12"
                   />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="maxWage">Maximum Wage (₹/day) *</Label>
                   <Input
-                    id="maxWage"
                     type="number"
-                    placeholder="1500"
+                    placeholder="Max (e.g., 1500)"
                     value={maxWage}
                     onChange={(e) => setMaxWage(e.target.value)}
                     required
@@ -159,7 +167,7 @@ export default function WorkerRegistration() {
               </div>
 
               <div className="space-y-2">
-                <Label>Location *</Label>
+                <Label>Your Location *</Label>
                 <div className="flex gap-2 mb-2">
                   <Button type="button" onClick={handleGetLocation} variant="outline" className="h-12">
                     Use Current Location

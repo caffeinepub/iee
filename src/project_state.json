@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 3,
+  "projectStateVersion": 7,
   "summary": "IEE (International Employment Ecosystem) - A workforce platform connecting verified workers with employers for daily wage and skilled jobs. Web-based version with worker/employer profiles, job posting and matching, QR codes for worker identification, ratings system, and basic admin dashboard.",
   "architectural_notes": [
     "Web-based platform using Motoko backend and React TypeScript frontend",
@@ -24,7 +24,7 @@
     "Cannot implement cloud hosting on AWS/GCP - deployed on Internet Computer"
   ],
   "isFixRequest": false,
-  "imageRequirements": "## Required Images\n- Modern hero banner showing diverse workers and employers connecting through the platform with clean professional aesthetic (hero-banner.dim_1200x400.png)\n- Worker profile icon representing workforce identity and verification (worker-icon.dim_128x128.png)\n- Employer profile icon representing business and hiring (employer-icon.dim_128x128.png)\n- Job posting illustration showing job creation and opportunity (job-posting-icon.dim_128x128.png)\n- QR code scanning illustration for attendance tracking (qr-scan-illustration.dim_256x256.png)\n- Rating stars icon for worker reliability scoring (rating-icon.dim_64x64.png)\n- Dashboard analytics illustration for admin metrics (analytics-illustration.dim_300x200.png)\n- Empty state illustration for no jobs available with encouraging message (no-jobs-illustration.dim_400x300.png)",
+  "imageRequirements": "## Required Images\n- Bronze badge icon illustration with copper/bronze metallic appearance (badge-bronze.dim_128x128.png)\n- Silver badge icon illustration with silver/gray metallic appearance (badge-silver.dim_128x128.png)\n- Gold badge icon illustration with gold/yellow metallic appearance (badge-gold.dim_128x128.png)\n- Star or heart icon for favorites feature in minimal style (icon-favorite.dim_64x64.png)\n- Bell icon for notification center in minimal style (icon-notification.dim_64x64.png)\n- Calendar icon for availability feature in minimal style (icon-calendar.dim_64x64.png)\n- Template or document icon for job templates in minimal style (icon-template.dim_64x64.png)",
   "existing_features": [
     {
       "id": "feature-create-worker-authentication-system-with-profile-creation-including-fields-for-name-mobile-number-unique-auto-generated-worker-id-skills-selection-multi-select-experience-level-availability-toggle-preferred-wage-range-and-location-input",
@@ -121,6 +121,110 @@
         "REQ-13"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-create-enhanced-employer-analytics-dashboard-showing-workforce-performance-insights-including-average-worker-reliability-score-by-skill-category-job-completion-rate-trends-over-time-average-time-to-fill-metrics-per-job-type-worker-retention-rate-calculation-and-top-performing-workers-leaderboard",
+      "title": "Create enhanced employer analytics dashboard showing workforce performance insights including average worker reliability score by skill category, job completion rate trends over time, average time-to-fill metrics per job type, worker retention rate calculation, and top-performing workers leaderboard",
+      "reqIds": [
+        "REQ-16"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-expand-admin-dashboard-with-deeper-kpi-analytics-including-monthly-fill-rate-trends-chart-worker-and-employer-retention-metrics-calculated-over-30-60-90-day-periods-revenue-tracking-simulation-showing-total-transaction-volume-average-revenue-per-job-and-subscription-tier-distribution-breakdown",
+      "title": "Expand admin dashboard with deeper KPI analytics including monthly fill rate trends chart, worker and employer retention metrics calculated over 30/60/90 day periods, revenue tracking simulation showing total transaction volume, average revenue per job, and subscription tier distribution breakdown",
+      "reqIds": [
+        "REQ-17"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-subscription-tier-management-interface-for-employers-showing-available-tiers-basic-professional-enterprise-with-feature-comparison-table-current-active-tier-with-expiration-date-upgrade-downgrade-options-and-tier-based-limitations-display-e-g-job-posting-limits-candidate-access-limits",
+      "title": "Create subscription tier management interface for employers showing available tiers (Basic/Professional/Enterprise) with feature comparison table, current active tier with expiration date, upgrade/downgrade options, and tier-based limitations display (e.g., job posting limits, candidate access limits)",
+      "reqIds": [
+        "REQ-18"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-build-comprehensive-work-history-analytics-page-for-workers-showing-attendance-statistics-total-days-worked-on-time-percentage-early-departure-count-earnings-breakdown-by-skill-category-job-completion-rate-with-visual-progress-indicator-and-monthly-work-pattern-calendar-heatmap",
+      "title": "Build comprehensive work history analytics page for workers showing attendance statistics (total days worked, on-time percentage, early departure count), earnings breakdown by skill category, job completion rate with visual progress indicator, and monthly work pattern calendar heatmap",
+      "reqIds": [
+        "REQ-19"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-refine-the-ui-design-system-with-professional-minimal-aesthetic-using-a-clean-color-scheme-that-avoids-blue-and-purple-implementing-consistent-spacing-scale-improved-typography-hierarchy-with-larger-font-sizes-for-better-readability-enhanced-accessibility-with-wcag-aa-contrast-ratios-and-simplified-navigation-flows-with-clear-visual-hierarchy",
+      "title": "Refine the UI design system with professional, minimal aesthetic using a clean color scheme that avoids blue and purple, implementing consistent spacing scale, improved typography hierarchy with larger font sizes for better readability, enhanced accessibility with WCAG AA contrast ratios, and simplified navigation flows with clear visual hierarchy",
+      "reqIds": [
+        "REQ-20"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-enhance-payment-tracking-ledger-for-workers-with-detailed-transaction-history-showing-payment-method-simulation-payment-date-with-time-job-reference-with-clickable-links-to-job-details-payment-status-badges-pending-completed-failed-running-balance-calculation-and-export-functionality-for-csv-download",
+      "title": "Enhance payment tracking ledger for workers with detailed transaction history showing payment method simulation, payment date with time, job reference with clickable links to job details, payment status badges (pending/completed/failed), running balance calculation, and export functionality for CSV download",
+      "reqIds": [
+        "REQ-21"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-job-posting-bulk-upload-feature-for-employers-to-create-multiple-job-listings-at-once-using-csv-template-with-validation-for-required-fields-preview-of-parsed-jobs-before-submission-error-reporting-for-invalid-entries-and-confirmation-of-successfully-created-jobs",
+      "title": "Add job posting bulk upload feature for employers to create multiple job listings at once using CSV template, with validation for required fields, preview of parsed jobs before submission, error reporting for invalid entries, and confirmation of successfully created jobs",
+      "reqIds": [
+        "REQ-22"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-display-worker-verification-badges-prominently-on-worker-profile-pages-and-in-employer-candidate-lists-showing-badge-icon-with-tier-color-bronze-copper-silver-gray-gold-yellow-and-job-completion-count",
+      "title": "Display worker verification badges prominently on worker profile pages and in employer candidate lists, showing badge icon with tier color (bronze/copper, silver/gray, gold/yellow) and job completion count",
+      "reqIds": [
+        "REQ-24"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-favorites-management-interface-in-employer-dashboard-showing-list-of-favorited-workers-with-their-profiles-reliability-scores-and-skills-with-quick-actions-to-view-full-profile-assign-to-job-or-remove-from-favorites",
+      "title": "Add favorites management interface in employer dashboard showing list of favorited workers with their profiles, reliability scores, and skills, with quick actions to view full profile, assign to job, or remove from favorites",
+      "reqIds": [
+        "REQ-26"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-job-templates-management-interface-allowing-employers-to-save-current-job-postings-as-templates-with-custom-names-view-template-library-and-create-new-job-postings-from-templates-with-one-click-population-of-all-fields",
+      "title": "Add job templates management interface allowing employers to save current job postings as templates with custom names, view template library, and create new job postings from templates with one-click population of all fields",
+      "reqIds": [
+        "REQ-28"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-build-worker-availability-calendar-interface-with-visual-day-week-month-views-allowing-workers-to-toggle-availability-for-specific-dates-see-upcoming-scheduled-jobs-and-view-availability-patterns-at-a-glance",
+      "title": "Build worker availability calendar interface with visual day/week/month views allowing workers to toggle availability for specific dates, see upcoming scheduled jobs, and view availability patterns at a glance",
+      "reqIds": [
+        "REQ-30"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-display-worker-availability-calendars-in-employer-candidate-review-interface-showing-which-workers-are-available-for-the-job-dates-helping-employers-make-informed-hiring-decisions-based-on-scheduling-compatibility",
+      "title": "Display worker availability calendars in employer candidate review interface showing which workers are available for the job dates, helping employers make informed hiring decisions based on scheduling compatibility",
+      "reqIds": [
+        "REQ-31"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-build-in-app-notification-center-for-workers-displaying-upcoming-shift-reminders-job-confirmations-and-important-alerts-with-unread-badge-count-notification-list-with-timestamps-and-mark-as-read-functionality",
+      "title": "Build in-app notification center for workers displaying upcoming shift reminders, job confirmations, and important alerts with unread badge count, notification list with timestamps, and mark as read functionality",
+      "reqIds": [
+        "REQ-33"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -189,6 +293,92 @@
       "summary": "Implement job matching algorithm that matches workers to jobs based on skill match percentage, distance radius from job location, worker availability status, and reliability score with priority given to verified workers with high reliability scores",
       "reqIds": [
         "REQ-5"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-16",
+      "summary": "Implement weighted job matching algorithm that calculates composite match scores based on skill match percentage (40% weight), distance from job location (30% weight), worker reliability score (20% weight), and worker availability status (10% weight), displaying match scores to employers in candidate lists",
+      "reqIds": [
+        "REQ-14"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-17",
+      "summary": "Enhance worker profile data model to include detailed skill categorization with proficiency levels (beginner/intermediate/expert) for each skill, total years of experience per skill category, and certification status flags",
+      "reqIds": [
+        "REQ-15"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-18",
+      "summary": "Worker verification badges showing milestone achievements (bronze/silver/gold) for 10, 50, and 100 jobs completed, displayed on worker profiles",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-19",
+      "summary": "Employer favorites list allowing employers to save and quickly access preferred workers for future hiring",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-20",
+      "summary": "Job templates system enabling employers to save job configurations and quickly repost similar positions",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-21",
+      "summary": "Worker availability calendar with visual day/week/month views showing worker availability patterns for better scheduling coordination",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-22",
+      "summary": "Automated job reminders with in-app notification center displaying upcoming shifts, job confirmations, and important alerts for workers",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-23",
+      "summary": "Create worker verification badge system with three milestone tiers: Bronze badge for 10 completed jobs, Silver badge for 50 completed jobs, and Gold badge for 100 completed jobs, calculating badge level based on completed job count from attendance records",
+      "reqIds": [
+        "REQ-23"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-25",
+      "summary": "Create employer favorites list system allowing employers to save preferred workers to a favorites collection, with ability to add workers from candidate lists or worker profiles and remove workers from favorites",
+      "reqIds": [
+        "REQ-25"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-27",
+      "summary": "Implement job templates system allowing employers to save job posting configurations as reusable templates, storing skill requirements, wage amount, duration, shift timing, and job description",
+      "reqIds": [
+        "REQ-27"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-29",
+      "summary": "Create worker availability calendar data model storing availability patterns per worker with day-level granularity, allowing workers to mark days as available or unavailable with optional time range specifications",
+      "reqIds": [
+        "REQ-29"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-32",
+      "summary": "Create job reminders system generating notification records for workers about upcoming shifts within 24 hours, job confirmations when assigned to jobs, and important job updates or cancellations",
+      "reqIds": [
+        "REQ-32"
       ],
       "status": "pending"
     }

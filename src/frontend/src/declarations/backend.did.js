@@ -13,6 +13,11 @@ export const UserRole__1 = IDL.Variant({
   'user' : IDL.Null,
   'guest' : IDL.Null,
 });
+export const ExperienceLevel = IDL.Variant({
+  'intermediate' : IDL.Null,
+  'novice' : IDL.Null,
+  'expert' : IDL.Null,
+});
 export const Skill = IDL.Variant({
   'roofing' : IDL.Null,
   'tiling' : IDL.Null,
@@ -25,14 +30,39 @@ export const Skill = IDL.Variant({
   'carpentry' : IDL.Null,
   'masonry' : IDL.Null,
 });
+export const CertifiedSkill = IDL.Record({
+  'skill' : Skill,
+  'isCertified' : IDL.Bool,
+});
+export const SkillWithExperience = IDL.Record({
+  'yearsOfExperience' : IDL.Nat,
+  'experienceLevel' : ExperienceLevel,
+  'skill' : Skill,
+  'certificationStatus' : IDL.Vec(CertifiedSkill),
+});
 export const Coordinates = IDL.Record({
   'latitude' : IDL.Float64,
   'longitude' : IDL.Float64,
 });
-export const ExperienceLevel = IDL.Variant({
-  'intermediate' : IDL.Null,
-  'novice' : IDL.Null,
-  'expert' : IDL.Null,
+export const Time = IDL.Int;
+export const JobPosting = IDL.Record({
+  'id' : IDL.Text,
+  'duration' : IDL.Float64,
+  'isCompleted' : IDL.Bool,
+  'jobDescription' : IDL.Text,
+  'createdAt' : Time,
+  'shiftTiming' : IDL.Text,
+  'employerId' : IDL.Principal,
+  'assignedWorkers' : IDL.Vec(IDL.Text),
+  'wageAmount' : IDL.Float64,
+  'requiredSkills' : IDL.Vec(SkillWithExperience),
+  'location' : Coordinates,
+  'workerCount' : IDL.Nat,
+});
+export const BulkJobResult = IDL.Record({
+  'successfullyCreatedJobs' : IDL.Vec(IDL.Text),
+  'validJobs' : IDL.Vec(JobPosting),
+  'invalidEntries' : IDL.Vec(IDL.Text),
 });
 export const WageRange = IDL.Record({
   'max' : IDL.Float64,
@@ -46,25 +76,23 @@ export const EmployerProfile = IDL.Record({
   'companyType' : IDL.Text,
   'coordinates' : Coordinates,
 });
-export const Time = IDL.Int;
-export const JobPosting = IDL.Record({
-  'id' : IDL.Text,
-  'duration' : IDL.Float64,
-  'isCompleted' : IDL.Bool,
-  'jobDescription' : IDL.Text,
-  'createdAt' : Time,
-  'shiftTiming' : IDL.Text,
-  'employerId' : IDL.Principal,
-  'assignedWorkers' : IDL.Vec(IDL.Text),
-  'wageAmount' : IDL.Float64,
-  'requiredSkills' : IDL.Vec(Skill),
-  'location' : Coordinates,
-  'workerCount' : IDL.Nat,
+export const PaymentStatus = IDL.Variant({
+  'pending' : IDL.Null,
+  'completed' : IDL.Null,
+  'failed' : IDL.Null,
+});
+export const PaymentMethod = IDL.Variant({
+  'mobileMoney' : IDL.Null,
+  'cash' : IDL.Null,
+  'bankTransfer' : IDL.Null,
+  'crypto' : IDL.Null,
 });
 export const PaymentRecord = IDL.Record({
+  'paymentStatus' : PaymentStatus,
+  'paymentMethod' : PaymentMethod,
   'jobId' : IDL.Text,
-  'isPaid' : IDL.Bool,
   'paymentDate' : Time,
+  'runningBalance' : IDL.Float64,
   'amount' : IDL.Float64,
 });
 export const AttendanceRecord = IDL.Record({
@@ -75,7 +103,6 @@ export const AttendanceRecord = IDL.Record({
 });
 export const WorkerProfile = IDL.Record({
   'id' : IDL.Text,
-  'experienceLevel' : ExperienceLevel,
   'completedJobs' : IDL.Nat,
   'reliabilityScore' : IDL.Float64,
   'principal' : IDL.Principal,
@@ -86,7 +113,7 @@ export const WorkerProfile = IDL.Record({
   'mobileNumber' : IDL.Text,
   'attendanceRecords' : IDL.Vec(AttendanceRecord),
   'rating' : IDL.Float64,
-  'skills' : IDL.Vec(Skill),
+  'skills' : IDL.Vec(SkillWithExperience),
   'coordinates' : Coordinates,
 });
 export const UserRole = IDL.Variant({
@@ -98,27 +125,108 @@ export const CandidateMatch = IDL.Record({
   'reliabilityScore' : IDL.Float64,
   'workerId' : IDL.Text,
   'distance' : IDL.Float64,
+  'matchScore' : IDL.Float64,
   'skillsMatchPercentage' : IDL.Float64,
+});
+export const JobReminders = IDL.Record({
+  'updateSent' : IDL.Bool,
+  'workerId' : IDL.Text,
+  'confirmationSent' : IDL.Bool,
+  'cancelled' : IDL.Bool,
+  'jobId' : IDL.Text,
+  'reminderSent' : IDL.Bool,
+});
+export const JobTemplate = IDL.Record({
+  'duration' : IDL.Float64,
+  'templateId' : IDL.Text,
+  'jobDescription' : IDL.Text,
+  'templateName' : IDL.Text,
+  'shiftTiming' : IDL.Text,
+  'employerId' : IDL.Principal,
+  'wageAmount' : IDL.Float64,
+  'requiredSkills' : IDL.Vec(SkillWithExperience),
+  'location' : Coordinates,
+  'workerCount' : IDL.Nat,
+});
+export const RetentionMetrics = IDL.Record({
+  'periodDays' : IDL.Nat,
+  'employerRetention' : IDL.Float64,
+  'workerRetention' : IDL.Float64,
+});
+export const RevenueMetrics = IDL.Record({
+  'averageRevenuePerJob' : IDL.Float64,
+  'totalTransactionVolume' : IDL.Float64,
+  'subscriptionTierDistribution' : IDL.Vec(IDL.Text),
+});
+export const MonthlyFillRate = IDL.Record({
+  'month' : IDL.Text,
+  'fillRate' : IDL.Float64,
 });
 export const SystemMetrics = IDL.Record({
   'workerRetentionRate' : IDL.Float64,
   'totalJobsPosted' : IDL.Nat,
   'employerRetentionRate' : IDL.Float64,
   'activeEmployersCount' : IDL.Nat,
+  'retentionMetrics' : IDL.Vec(RetentionMetrics),
   'totalWorkersRegistered' : IDL.Nat,
   'jobFillRate' : IDL.Float64,
   'averageTimeToFillJobs' : IDL.Float64,
+  'revenueMetrics' : RevenueMetrics,
+  'monthlyFillRates' : IDL.Vec(MonthlyFillRate),
+});
+export const BadgeLevel = IDL.Variant({
+  'bronze' : IDL.Null,
+  'gold' : IDL.Null,
+  'none' : IDL.Null,
+  'silver' : IDL.Null,
+});
+export const VerifiedWorker = IDL.Record({
+  'badgeLevel' : BadgeLevel,
+  'completedJobs' : IDL.Nat,
+  'reliabilityScore' : IDL.Float64,
+  'workerId' : IDL.Text,
+  'principal' : IDL.Principal,
+  'averageRating' : IDL.Float64,
+  'verifiedAt' : Time,
+});
+export const DayAvailability = IDL.Record({
+  'available' : IDL.Bool,
+  'timeRange' : IDL.Opt(IDL.Tuple(IDL.Text, IDL.Text)),
+});
+export const AvailabilityRequest = IDL.Record({
+  'available' : IDL.Bool,
+  'timeRange' : IDL.Opt(IDL.Tuple(IDL.Text, IDL.Text)),
+  'dayIndex' : IDL.Nat,
 });
 
 export const idlService = IDL.Service({
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+  'addFavoriteWorker' : IDL.Func([IDL.Principal, IDL.Text], [], []),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole__1], [], []),
   'assignWorkerToJob' : IDL.Func([IDL.Text, IDL.Text], [], []),
+  'bulkJobUpload' : IDL.Func(
+      [
+        IDL.Vec(
+          IDL.Tuple(
+            IDL.Text,
+            IDL.Vec(SkillWithExperience),
+            IDL.Float64,
+            IDL.Float64,
+            IDL.Text,
+            IDL.Nat,
+            Coordinates,
+            IDL.Text,
+          )
+        ),
+      ],
+      [BulkJobResult],
+      [],
+    ),
   'checkInWorker' : IDL.Func([IDL.Text, IDL.Text], [], []),
   'checkOutWorker' : IDL.Func([IDL.Text, IDL.Text], [], []),
   'createJobPosting' : IDL.Func(
       [
-        IDL.Vec(Skill),
+        IDL.Vec(SkillWithExperience),
         IDL.Float64,
         IDL.Float64,
         IDL.Text,
@@ -133,8 +241,7 @@ export const idlService = IDL.Service({
       [
         IDL.Text,
         IDL.Text,
-        IDL.Vec(Skill),
-        ExperienceLevel,
+        IDL.Vec(SkillWithExperience),
         WageRange,
         Coordinates,
       ],
@@ -146,6 +253,11 @@ export const idlService = IDL.Service({
   'getAllWorkers' : IDL.Func([], [IDL.Vec(WorkerProfile)], ['query']),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole__1], ['query']),
+  'getEmployerFavoriteWorkers' : IDL.Func(
+      [IDL.Principal],
+      [IDL.Vec(IDL.Text)],
+      ['query'],
+    ),
   'getEmployerProfile' : IDL.Func(
       [IDL.Principal],
       [IDL.Opt(EmployerProfile)],
@@ -153,6 +265,12 @@ export const idlService = IDL.Service({
     ),
   'getJobMatches' : IDL.Func([IDL.Text], [IDL.Vec(CandidateMatch)], ['query']),
   'getJobPosting' : IDL.Func([IDL.Text], [IDL.Opt(JobPosting)], ['query']),
+  'getJobReminders' : IDL.Func([IDL.Text], [IDL.Vec(JobReminders)], ['query']),
+  'getJobTemplates' : IDL.Func(
+      [IDL.Principal],
+      [IDL.Vec(JobTemplate)],
+      ['query'],
+    ),
   'getMyEmployerProfile' : IDL.Func([], [IDL.Opt(EmployerProfile)], ['query']),
   'getMyJobPostings' : IDL.Func([], [IDL.Vec(JobPosting)], ['query']),
   'getMyWorkerProfile' : IDL.Func([], [IDL.Opt(WorkerProfile)], ['query']),
@@ -160,6 +278,16 @@ export const idlService = IDL.Service({
   'getUserProfile' : IDL.Func(
       [IDL.Principal],
       [IDL.Opt(UserProfile)],
+      ['query'],
+    ),
+  'getVerifiedWorker' : IDL.Func(
+      [IDL.Text],
+      [IDL.Opt(VerifiedWorker)],
+      ['query'],
+    ),
+  'getWorkerAvailability' : IDL.Func(
+      [IDL.Text],
+      [IDL.Vec(DayAvailability)],
       ['query'],
     ),
   'getWorkerPaymentHistory' : IDL.Func(
@@ -178,10 +306,22 @@ export const idlService = IDL.Service({
       [],
       [],
     ),
-  'recordPayment' : IDL.Func([IDL.Text, IDL.Text, IDL.Float64], [], []),
+  'recordPayment' : IDL.Func(
+      [IDL.Text, IDL.Text, IDL.Float64, PaymentMethod],
+      [],
+      [],
+    ),
+  'removeFavoriteWorker' : IDL.Func([IDL.Principal, IDL.Text], [], []),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
   'saveEmployerProfile' : IDL.Func([EmployerProfile], [], []),
+  'saveJobTemplate' : IDL.Func([JobTemplate], [], []),
+  'updateJobReminders' : IDL.Func([JobReminders], [], []),
   'updateWorkerAvailability' : IDL.Func([IDL.Text, IDL.Bool], [], []),
+  'updateWorkerAvailabilityWithPattern' : IDL.Func(
+      [IDL.Text, IDL.Vec(AvailabilityRequest)],
+      [],
+      [],
+    ),
 });
 
 export const idlInitArgs = [];
@@ -191,6 +331,11 @@ export const idlFactory = ({ IDL }) => {
     'admin' : IDL.Null,
     'user' : IDL.Null,
     'guest' : IDL.Null,
+  });
+  const ExperienceLevel = IDL.Variant({
+    'intermediate' : IDL.Null,
+    'novice' : IDL.Null,
+    'expert' : IDL.Null,
   });
   const Skill = IDL.Variant({
     'roofing' : IDL.Null,
@@ -204,23 +349,19 @@ export const idlFactory = ({ IDL }) => {
     'carpentry' : IDL.Null,
     'masonry' : IDL.Null,
   });
+  const CertifiedSkill = IDL.Record({
+    'skill' : Skill,
+    'isCertified' : IDL.Bool,
+  });
+  const SkillWithExperience = IDL.Record({
+    'yearsOfExperience' : IDL.Nat,
+    'experienceLevel' : ExperienceLevel,
+    'skill' : Skill,
+    'certificationStatus' : IDL.Vec(CertifiedSkill),
+  });
   const Coordinates = IDL.Record({
     'latitude' : IDL.Float64,
     'longitude' : IDL.Float64,
-  });
-  const ExperienceLevel = IDL.Variant({
-    'intermediate' : IDL.Null,
-    'novice' : IDL.Null,
-    'expert' : IDL.Null,
-  });
-  const WageRange = IDL.Record({ 'max' : IDL.Float64, 'min' : IDL.Float64 });
-  const EmployerProfile = IDL.Record({
-    'principal' : IDL.Principal,
-    'contactPerson' : IDL.Text,
-    'mobileNumber' : IDL.Text,
-    'companyName' : IDL.Text,
-    'companyType' : IDL.Text,
-    'coordinates' : Coordinates,
   });
   const Time = IDL.Int;
   const JobPosting = IDL.Record({
@@ -233,14 +374,41 @@ export const idlFactory = ({ IDL }) => {
     'employerId' : IDL.Principal,
     'assignedWorkers' : IDL.Vec(IDL.Text),
     'wageAmount' : IDL.Float64,
-    'requiredSkills' : IDL.Vec(Skill),
+    'requiredSkills' : IDL.Vec(SkillWithExperience),
     'location' : Coordinates,
     'workerCount' : IDL.Nat,
   });
+  const BulkJobResult = IDL.Record({
+    'successfullyCreatedJobs' : IDL.Vec(IDL.Text),
+    'validJobs' : IDL.Vec(JobPosting),
+    'invalidEntries' : IDL.Vec(IDL.Text),
+  });
+  const WageRange = IDL.Record({ 'max' : IDL.Float64, 'min' : IDL.Float64 });
+  const EmployerProfile = IDL.Record({
+    'principal' : IDL.Principal,
+    'contactPerson' : IDL.Text,
+    'mobileNumber' : IDL.Text,
+    'companyName' : IDL.Text,
+    'companyType' : IDL.Text,
+    'coordinates' : Coordinates,
+  });
+  const PaymentStatus = IDL.Variant({
+    'pending' : IDL.Null,
+    'completed' : IDL.Null,
+    'failed' : IDL.Null,
+  });
+  const PaymentMethod = IDL.Variant({
+    'mobileMoney' : IDL.Null,
+    'cash' : IDL.Null,
+    'bankTransfer' : IDL.Null,
+    'crypto' : IDL.Null,
+  });
   const PaymentRecord = IDL.Record({
+    'paymentStatus' : PaymentStatus,
+    'paymentMethod' : PaymentMethod,
     'jobId' : IDL.Text,
-    'isPaid' : IDL.Bool,
     'paymentDate' : Time,
+    'runningBalance' : IDL.Float64,
     'amount' : IDL.Float64,
   });
   const AttendanceRecord = IDL.Record({
@@ -251,7 +419,6 @@ export const idlFactory = ({ IDL }) => {
   });
   const WorkerProfile = IDL.Record({
     'id' : IDL.Text,
-    'experienceLevel' : ExperienceLevel,
     'completedJobs' : IDL.Nat,
     'reliabilityScore' : IDL.Float64,
     'principal' : IDL.Principal,
@@ -262,7 +429,7 @@ export const idlFactory = ({ IDL }) => {
     'mobileNumber' : IDL.Text,
     'attendanceRecords' : IDL.Vec(AttendanceRecord),
     'rating' : IDL.Float64,
-    'skills' : IDL.Vec(Skill),
+    'skills' : IDL.Vec(SkillWithExperience),
     'coordinates' : Coordinates,
   });
   const UserRole = IDL.Variant({ 'employer' : IDL.Null, 'worker' : IDL.Null });
@@ -271,27 +438,108 @@ export const idlFactory = ({ IDL }) => {
     'reliabilityScore' : IDL.Float64,
     'workerId' : IDL.Text,
     'distance' : IDL.Float64,
+    'matchScore' : IDL.Float64,
     'skillsMatchPercentage' : IDL.Float64,
+  });
+  const JobReminders = IDL.Record({
+    'updateSent' : IDL.Bool,
+    'workerId' : IDL.Text,
+    'confirmationSent' : IDL.Bool,
+    'cancelled' : IDL.Bool,
+    'jobId' : IDL.Text,
+    'reminderSent' : IDL.Bool,
+  });
+  const JobTemplate = IDL.Record({
+    'duration' : IDL.Float64,
+    'templateId' : IDL.Text,
+    'jobDescription' : IDL.Text,
+    'templateName' : IDL.Text,
+    'shiftTiming' : IDL.Text,
+    'employerId' : IDL.Principal,
+    'wageAmount' : IDL.Float64,
+    'requiredSkills' : IDL.Vec(SkillWithExperience),
+    'location' : Coordinates,
+    'workerCount' : IDL.Nat,
+  });
+  const RetentionMetrics = IDL.Record({
+    'periodDays' : IDL.Nat,
+    'employerRetention' : IDL.Float64,
+    'workerRetention' : IDL.Float64,
+  });
+  const RevenueMetrics = IDL.Record({
+    'averageRevenuePerJob' : IDL.Float64,
+    'totalTransactionVolume' : IDL.Float64,
+    'subscriptionTierDistribution' : IDL.Vec(IDL.Text),
+  });
+  const MonthlyFillRate = IDL.Record({
+    'month' : IDL.Text,
+    'fillRate' : IDL.Float64,
   });
   const SystemMetrics = IDL.Record({
     'workerRetentionRate' : IDL.Float64,
     'totalJobsPosted' : IDL.Nat,
     'employerRetentionRate' : IDL.Float64,
     'activeEmployersCount' : IDL.Nat,
+    'retentionMetrics' : IDL.Vec(RetentionMetrics),
     'totalWorkersRegistered' : IDL.Nat,
     'jobFillRate' : IDL.Float64,
     'averageTimeToFillJobs' : IDL.Float64,
+    'revenueMetrics' : RevenueMetrics,
+    'monthlyFillRates' : IDL.Vec(MonthlyFillRate),
+  });
+  const BadgeLevel = IDL.Variant({
+    'bronze' : IDL.Null,
+    'gold' : IDL.Null,
+    'none' : IDL.Null,
+    'silver' : IDL.Null,
+  });
+  const VerifiedWorker = IDL.Record({
+    'badgeLevel' : BadgeLevel,
+    'completedJobs' : IDL.Nat,
+    'reliabilityScore' : IDL.Float64,
+    'workerId' : IDL.Text,
+    'principal' : IDL.Principal,
+    'averageRating' : IDL.Float64,
+    'verifiedAt' : Time,
+  });
+  const DayAvailability = IDL.Record({
+    'available' : IDL.Bool,
+    'timeRange' : IDL.Opt(IDL.Tuple(IDL.Text, IDL.Text)),
+  });
+  const AvailabilityRequest = IDL.Record({
+    'available' : IDL.Bool,
+    'timeRange' : IDL.Opt(IDL.Tuple(IDL.Text, IDL.Text)),
+    'dayIndex' : IDL.Nat,
   });
   
   return IDL.Service({
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+    'addFavoriteWorker' : IDL.Func([IDL.Principal, IDL.Text], [], []),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole__1], [], []),
     'assignWorkerToJob' : IDL.Func([IDL.Text, IDL.Text], [], []),
+    'bulkJobUpload' : IDL.Func(
+        [
+          IDL.Vec(
+            IDL.Tuple(
+              IDL.Text,
+              IDL.Vec(SkillWithExperience),
+              IDL.Float64,
+              IDL.Float64,
+              IDL.Text,
+              IDL.Nat,
+              Coordinates,
+              IDL.Text,
+            )
+          ),
+        ],
+        [BulkJobResult],
+        [],
+      ),
     'checkInWorker' : IDL.Func([IDL.Text, IDL.Text], [], []),
     'checkOutWorker' : IDL.Func([IDL.Text, IDL.Text], [], []),
     'createJobPosting' : IDL.Func(
         [
-          IDL.Vec(Skill),
+          IDL.Vec(SkillWithExperience),
           IDL.Float64,
           IDL.Float64,
           IDL.Text,
@@ -306,8 +554,7 @@ export const idlFactory = ({ IDL }) => {
         [
           IDL.Text,
           IDL.Text,
-          IDL.Vec(Skill),
-          ExperienceLevel,
+          IDL.Vec(SkillWithExperience),
           WageRange,
           Coordinates,
         ],
@@ -319,6 +566,11 @@ export const idlFactory = ({ IDL }) => {
     'getAllWorkers' : IDL.Func([], [IDL.Vec(WorkerProfile)], ['query']),
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole__1], ['query']),
+    'getEmployerFavoriteWorkers' : IDL.Func(
+        [IDL.Principal],
+        [IDL.Vec(IDL.Text)],
+        ['query'],
+      ),
     'getEmployerProfile' : IDL.Func(
         [IDL.Principal],
         [IDL.Opt(EmployerProfile)],
@@ -330,6 +582,16 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'getJobPosting' : IDL.Func([IDL.Text], [IDL.Opt(JobPosting)], ['query']),
+    'getJobReminders' : IDL.Func(
+        [IDL.Text],
+        [IDL.Vec(JobReminders)],
+        ['query'],
+      ),
+    'getJobTemplates' : IDL.Func(
+        [IDL.Principal],
+        [IDL.Vec(JobTemplate)],
+        ['query'],
+      ),
     'getMyEmployerProfile' : IDL.Func(
         [],
         [IDL.Opt(EmployerProfile)],
@@ -341,6 +603,16 @@ export const idlFactory = ({ IDL }) => {
     'getUserProfile' : IDL.Func(
         [IDL.Principal],
         [IDL.Opt(UserProfile)],
+        ['query'],
+      ),
+    'getVerifiedWorker' : IDL.Func(
+        [IDL.Text],
+        [IDL.Opt(VerifiedWorker)],
+        ['query'],
+      ),
+    'getWorkerAvailability' : IDL.Func(
+        [IDL.Text],
+        [IDL.Vec(DayAvailability)],
         ['query'],
       ),
     'getWorkerPaymentHistory' : IDL.Func(
@@ -359,10 +631,22 @@ export const idlFactory = ({ IDL }) => {
         [],
         [],
       ),
-    'recordPayment' : IDL.Func([IDL.Text, IDL.Text, IDL.Float64], [], []),
+    'recordPayment' : IDL.Func(
+        [IDL.Text, IDL.Text, IDL.Float64, PaymentMethod],
+        [],
+        [],
+      ),
+    'removeFavoriteWorker' : IDL.Func([IDL.Principal, IDL.Text], [], []),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
     'saveEmployerProfile' : IDL.Func([EmployerProfile], [], []),
+    'saveJobTemplate' : IDL.Func([JobTemplate], [], []),
+    'updateJobReminders' : IDL.Func([JobReminders], [], []),
     'updateWorkerAvailability' : IDL.Func([IDL.Text, IDL.Bool], [], []),
+    'updateWorkerAvailabilityWithPattern' : IDL.Func(
+        [IDL.Text, IDL.Vec(AvailabilityRequest)],
+        [],
+        [],
+      ),
   });
 };
 

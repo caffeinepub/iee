@@ -7,18 +7,21 @@ import type {
   EmployerProfile,
   JobPosting,
   CandidateMatch,
+  AttendanceRecord,
   PaymentRecord,
   SystemMetrics,
+  BulkJobResult,
+  VerifiedWorker,
+  JobTemplate,
+  DayAvailability,
+  JobReminders,
   SkillWithExperience,
   WageRange,
   Coordinates,
   PaymentMethod,
-  VerifiedWorker,
-  JobTemplate,
-  DayAvailability,
   AvailabilityRequest,
-  JobReminders,
 } from '../backend';
+import { Principal } from '@icp-sdk/core/principal';
 
 // User Profile Queries
 export function useGetCallerUserProfile() {
@@ -57,32 +60,6 @@ export function useSaveCallerUserProfile() {
 }
 
 // Worker Profile Queries
-export function useGetMyWorkerProfile() {
-  const { actor, isFetching: actorFetching } = useActor();
-
-  return useQuery<WorkerProfile | null>({
-    queryKey: ['myWorkerProfile'],
-    queryFn: async () => {
-      if (!actor) throw new Error('Actor not available');
-      return actor.getMyWorkerProfile();
-    },
-    enabled: !!actor && !actorFetching,
-  });
-}
-
-export function useGetWorkerProfile(workerId: string | undefined) {
-  const { actor, isFetching: actorFetching } = useActor();
-
-  return useQuery<WorkerProfile | null>({
-    queryKey: ['workerProfile', workerId],
-    queryFn: async () => {
-      if (!actor || !workerId) throw new Error('Actor or workerId not available');
-      return actor.getWorkerProfile(workerId);
-    },
-    enabled: !!actor && !actorFetching && !!workerId,
-  });
-}
-
 export function useCreateWorkerProfile() {
   const { actor } = useActor();
   const queryClient = useQueryClient();
@@ -106,7 +83,34 @@ export function useCreateWorkerProfile() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['myWorkerProfile'] });
+      queryClient.invalidateQueries({ queryKey: ['allWorkers'] });
     },
+  });
+}
+
+export function useGetMyWorkerProfile() {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<WorkerProfile | null>({
+    queryKey: ['myWorkerProfile'],
+    queryFn: async () => {
+      if (!actor) return null;
+      return actor.getMyWorkerProfile();
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+export function useGetWorkerProfile(workerId: string | undefined) {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<WorkerProfile | null>({
+    queryKey: ['workerProfile', workerId],
+    queryFn: async () => {
+      if (!actor || !workerId) return null;
+      return actor.getWorkerProfile(workerId);
+    },
+    enabled: !!actor && !isFetching && !!workerId,
   });
 }
 
@@ -119,26 +123,14 @@ export function useUpdateWorkerAvailability() {
       if (!actor) throw new Error('Actor not available');
       return actor.updateWorkerAvailability(data.workerId, data.isAvailable);
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['workerProfile', variables.workerId] });
       queryClient.invalidateQueries({ queryKey: ['myWorkerProfile'] });
     },
   });
 }
 
 // Employer Profile Queries
-export function useGetMyEmployerProfile() {
-  const { actor, isFetching: actorFetching } = useActor();
-
-  return useQuery<EmployerProfile | null>({
-    queryKey: ['myEmployerProfile'],
-    queryFn: async () => {
-      if (!actor) throw new Error('Actor not available');
-      return actor.getMyEmployerProfile();
-    },
-    enabled: !!actor && !actorFetching,
-  });
-}
-
 export function useSaveEmployerProfile() {
   const { actor } = useActor();
   const queryClient = useQueryClient();
@@ -150,7 +142,21 @@ export function useSaveEmployerProfile() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['myEmployerProfile'] });
+      queryClient.invalidateQueries({ queryKey: ['allEmployers'] });
     },
+  });
+}
+
+export function useGetMyEmployerProfile() {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<EmployerProfile | null>({
+    queryKey: ['myEmployerProfile'],
+    queryFn: async () => {
+      if (!actor) return null;
+      return actor.getMyEmployerProfile();
+    },
+    enabled: !!actor && !isFetching,
   });
 }
 
@@ -188,55 +194,55 @@ export function useCreateJobPosting() {
 }
 
 export function useGetMyJobPostings() {
-  const { actor, isFetching: actorFetching } = useActor();
+  const { actor, isFetching } = useActor();
 
   return useQuery<JobPosting[]>({
     queryKey: ['myJobPostings'],
     queryFn: async () => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) return [];
       return actor.getMyJobPostings();
     },
-    enabled: !!actor && !actorFetching,
+    enabled: !!actor && !isFetching,
   });
 }
 
 export function useGetAllJobPostings() {
-  const { actor, isFetching: actorFetching } = useActor();
+  const { actor, isFetching } = useActor();
 
   return useQuery<JobPosting[]>({
     queryKey: ['allJobPostings'],
     queryFn: async () => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) return [];
       return actor.getAllJobPostings();
     },
-    enabled: !!actor && !actorFetching,
+    enabled: !!actor && !isFetching,
   });
 }
 
 export function useGetJobPosting(jobId: string | undefined) {
-  const { actor, isFetching: actorFetching } = useActor();
+  const { actor, isFetching } = useActor();
 
   return useQuery<JobPosting | null>({
     queryKey: ['jobPosting', jobId],
     queryFn: async () => {
-      if (!actor || !jobId) throw new Error('Actor or jobId not available');
+      if (!actor || !jobId) return null;
       return actor.getJobPosting(jobId);
     },
-    enabled: !!actor && !actorFetching && !!jobId,
+    enabled: !!actor && !isFetching && !!jobId,
   });
 }
 
-// Job Matching Queries
+// Job Matching
 export function useGetJobMatches(jobId: string | undefined) {
-  const { actor, isFetching: actorFetching } = useActor();
+  const { actor, isFetching } = useActor();
 
   return useQuery<CandidateMatch[]>({
     queryKey: ['jobMatches', jobId],
     queryFn: async () => {
-      if (!actor || !jobId) throw new Error('Actor or jobId not available');
+      if (!actor || !jobId) return [];
       return actor.getJobMatches(jobId);
     },
-    enabled: !!actor && !actorFetching && !!jobId,
+    enabled: !!actor && !isFetching && !!jobId,
   });
 }
 
@@ -257,7 +263,28 @@ export function useAssignWorkerToJob() {
   });
 }
 
-// Attendance Queries
+// Bulk Job Upload
+export function useBulkJobUpload() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (
+      jobEntries: Array<
+        [string, SkillWithExperience[], number, number, string, bigint, Coordinates, string]
+      >
+    ) => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.bulkJobUpload(jobEntries);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['myJobPostings'] });
+      queryClient.invalidateQueries({ queryKey: ['allJobPostings'] });
+    },
+  });
+}
+
+// Attendance Tracking
 export function useCheckInWorker() {
   const { actor } = useActor();
   const queryClient = useQueryClient();
@@ -267,9 +294,9 @@ export function useCheckInWorker() {
       if (!actor) throw new Error('Actor not available');
       return actor.checkInWorker(data.jobId, data.workerId);
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['workerProfile', variables.workerId] });
       queryClient.invalidateQueries({ queryKey: ['myWorkerProfile'] });
-      queryClient.invalidateQueries({ queryKey: ['myJobPostings'] });
     },
   });
 }
@@ -283,14 +310,14 @@ export function useCheckOutWorker() {
       if (!actor) throw new Error('Actor not available');
       return actor.checkOutWorker(data.jobId, data.workerId);
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['workerProfile', variables.workerId] });
       queryClient.invalidateQueries({ queryKey: ['myWorkerProfile'] });
-      queryClient.invalidateQueries({ queryKey: ['myJobPostings'] });
     },
   });
 }
 
-// Rating Queries
+// Rating System
 export function useRateWorker() {
   const { actor } = useActor();
   const queryClient = useQueryClient();
@@ -305,13 +332,14 @@ export function useRateWorker() {
       if (!actor) throw new Error('Actor not available');
       return actor.rateWorker(data.jobId, data.workerId, data.rating, data.remarks);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['myJobPostings'] });
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['workerProfile', variables.workerId] });
+      queryClient.invalidateQueries({ queryKey: ['verifiedWorker', variables.workerId] });
     },
   });
 }
 
-// Payment Queries
+// Payment Tracking
 export function useRecordPayment() {
   const { actor } = useActor();
   const queryClient = useQueryClient();
@@ -326,15 +354,29 @@ export function useRecordPayment() {
       if (!actor) throw new Error('Actor not available');
       return actor.recordPayment(data.workerId, data.jobId, data.amount, data.paymentMethod);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['myWorkerProfile'] });
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['workerPaymentHistory', variables.workerId] });
+      queryClient.invalidateQueries({ queryKey: ['workerProfile', variables.workerId] });
     },
+  });
+}
+
+export function useGetWorkerPaymentHistory(workerId: string | undefined) {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<PaymentRecord[]>({
+    queryKey: ['workerPaymentHistory', workerId],
+    queryFn: async () => {
+      if (!actor || !workerId) return [];
+      return actor.getWorkerPaymentHistory(workerId);
+    },
+    enabled: !!actor && !isFetching && !!workerId,
   });
 }
 
 // Admin Queries
 export function useGetSystemMetrics() {
-  const { actor, isFetching: actorFetching } = useActor();
+  const { actor, isFetching } = useActor();
 
   return useQuery<SystemMetrics>({
     queryKey: ['systemMetrics'],
@@ -342,12 +384,12 @@ export function useGetSystemMetrics() {
       if (!actor) throw new Error('Actor not available');
       return actor.getSystemMetrics();
     },
-    enabled: !!actor && !actorFetching,
+    enabled: !!actor && !isFetching,
   });
 }
 
 export function useIsCallerAdmin() {
-  const { actor, isFetching: actorFetching } = useActor();
+  const { actor, isFetching } = useActor();
 
   return useQuery<boolean>({
     queryKey: ['isCallerAdmin'],
@@ -355,13 +397,39 @@ export function useIsCallerAdmin() {
       if (!actor) return false;
       return actor.isCallerAdmin();
     },
-    enabled: !!actor && !actorFetching,
+    enabled: !!actor && !isFetching,
   });
 }
 
-// Verified Worker (Badge) Queries
+export function useGetAllWorkers() {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<WorkerProfile[]>({
+    queryKey: ['allWorkers'],
+    queryFn: async () => {
+      if (!actor) return [];
+      return actor.getAllWorkers();
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+export function useGetAllEmployers() {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<EmployerProfile[]>({
+    queryKey: ['allEmployers'],
+    queryFn: async () => {
+      if (!actor) return [];
+      return actor.getAllEmployers();
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+// Verified Workers (Badges)
 export function useGetVerifiedWorker(workerId: string | undefined) {
-  const { actor, isFetching: actorFetching } = useActor();
+  const { actor, isFetching } = useActor();
 
   return useQuery<VerifiedWorker | null>({
     queryKey: ['verifiedWorker', workerId],
@@ -369,13 +437,13 @@ export function useGetVerifiedWorker(workerId: string | undefined) {
       if (!actor || !workerId) return null;
       return actor.getVerifiedWorker(workerId);
     },
-    enabled: !!actor && !actorFetching && !!workerId,
+    enabled: !!actor && !isFetching && !!workerId,
   });
 }
 
-// Employer Favorites Queries
+// Employer Favorites
 export function useGetEmployerFavoriteWorkers() {
-  const { actor, isFetching: actorFetching } = useActor();
+  const { actor, isFetching } = useActor();
   const { identity } = useInternetIdentity();
 
   return useQuery<string[]>({
@@ -384,7 +452,7 @@ export function useGetEmployerFavoriteWorkers() {
       if (!actor || !identity) return [];
       return actor.getEmployerFavoriteWorkers(identity.getPrincipal());
     },
-    enabled: !!actor && !actorFetching && !!identity,
+    enabled: !!actor && !isFetching && !!identity,
   });
 }
 
@@ -420,21 +488,7 @@ export function useRemoveFavoriteWorker() {
   });
 }
 
-// Job Templates Queries
-export function useGetJobTemplates() {
-  const { actor, isFetching: actorFetching } = useActor();
-  const { identity } = useInternetIdentity();
-
-  return useQuery<JobTemplate[]>({
-    queryKey: ['jobTemplates', identity?.getPrincipal().toString()],
-    queryFn: async () => {
-      if (!actor || !identity) return [];
-      return actor.getJobTemplates(identity.getPrincipal());
-    },
-    enabled: !!actor && !actorFetching && !!identity,
-  });
-}
-
+// Job Templates
 export function useSaveJobTemplate() {
   const { actor } = useActor();
   const queryClient = useQueryClient();
@@ -444,26 +498,29 @@ export function useSaveJobTemplate() {
       if (!actor) throw new Error('Actor not available');
       return actor.saveJobTemplate(template);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['jobTemplates'] });
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ['jobTemplates', variables.employerId.toString()],
+      });
     },
   });
 }
 
-// Worker Availability Queries
-export function useGetWorkerAvailability(workerId: string | undefined) {
-  const { actor, isFetching: actorFetching } = useActor();
+export function useGetJobTemplates() {
+  const { actor, isFetching } = useActor();
+  const { identity } = useInternetIdentity();
 
-  return useQuery<DayAvailability[]>({
-    queryKey: ['workerAvailability', workerId],
+  return useQuery<JobTemplate[]>({
+    queryKey: ['jobTemplates', identity?.getPrincipal().toString()],
     queryFn: async () => {
-      if (!actor || !workerId) return [];
-      return actor.getWorkerAvailability(workerId);
+      if (!actor || !identity) return [];
+      return actor.getJobTemplates(identity.getPrincipal());
     },
-    enabled: !!actor && !actorFetching && !!workerId,
+    enabled: !!actor && !isFetching && !!identity,
   });
 }
 
+// Worker Availability
 export function useUpdateWorkerAvailabilityWithPattern() {
   const { actor } = useActor();
   const queryClient = useQueryClient();
@@ -479,21 +536,20 @@ export function useUpdateWorkerAvailabilityWithPattern() {
   });
 }
 
-// Job Reminders Queries
-export function useGetJobReminders(jobId: string | undefined) {
-  const { actor, isFetching: actorFetching } = useActor();
+export function useGetWorkerAvailability(workerId: string | undefined) {
+  const { actor, isFetching } = useActor();
 
-  return useQuery<JobReminders[]>({
-    queryKey: ['jobReminders', jobId],
+  return useQuery<DayAvailability[]>({
+    queryKey: ['workerAvailability', workerId],
     queryFn: async () => {
-      if (!actor || !jobId) return [];
-      return actor.getJobReminders(jobId);
+      if (!actor || !workerId) return [];
+      return actor.getWorkerAvailability(workerId);
     },
-    enabled: !!actor && !actorFetching && !!jobId,
-    refetchInterval: 30000, // Poll every 30 seconds
+    enabled: !!actor && !isFetching && !!workerId,
   });
 }
 
+// Job Reminders
 export function useUpdateJobReminders() {
   const { actor } = useActor();
   const queryClient = useQueryClient();
@@ -509,33 +565,32 @@ export function useUpdateJobReminders() {
   });
 }
 
-// Worker Notifications (aggregated from job reminders)
-export function useGetWorkerNotifications() {
-  const { actor, isFetching: actorFetching } = useActor();
-  const { data: workerProfile } = useGetMyWorkerProfile();
+export function useGetJobReminders(jobId: string | undefined) {
+  const { actor, isFetching } = useActor();
 
   return useQuery<JobReminders[]>({
-    queryKey: ['workerNotifications'],
+    queryKey: ['jobReminders', jobId],
     queryFn: async () => {
-      if (!actor || !workerProfile) return [];
-      
-      // Get all jobs assigned to this worker
-      const allJobs = await actor.getAllJobPostings();
-      const assignedJobs = allJobs.filter(job => 
-        job.assignedWorkers.includes(workerProfile.id)
-      );
-
-      // Fetch reminders for all assigned jobs
-      const remindersPromises = assignedJobs.map(job => 
-        actor.getJobReminders(job.id)
-      );
-      const remindersArrays = await Promise.all(remindersPromises);
-      
-      // Flatten and filter for this worker
-      const allReminders = remindersArrays.flat();
-      return allReminders.filter(r => r.workerId === workerProfile.id);
+      if (!actor || !jobId) return [];
+      return actor.getJobReminders(jobId);
     },
-    enabled: !!actor && !actorFetching && !!workerProfile,
-    refetchInterval: 30000, // Poll every 30 seconds
+    enabled: !!actor && !isFetching && !!jobId,
+  });
+}
+
+// Worker Notifications (mock implementation - returns job reminders)
+export function useGetWorkerNotifications() {
+  const { actor, isFetching } = useActor();
+  const { data: profile } = useGetMyWorkerProfile();
+
+  return useQuery<JobReminders[]>({
+    queryKey: ['workerNotifications', profile?.id],
+    queryFn: async () => {
+      if (!actor || !profile) return [];
+      // Return empty array as notifications are job-specific
+      // In a real implementation, this would aggregate reminders across all jobs
+      return [];
+    },
+    enabled: !!actor && !isFetching && !!profile,
   });
 }

@@ -9,24 +9,24 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   const currentYear = new Date().getFullYear();
-  const appIdentifier = encodeURIComponent(window.location.hostname || 'iee-platform');
+  const appIdentifier = encodeURIComponent(window.location.hostname || 'workconnect-platform');
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Navigation />
       <main className="flex-1">{children}</main>
       <footer className="border-t border-border bg-card mt-auto">
-        <div className="container mx-auto px-4 py-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="container mx-auto px-4 py-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
             <div>
-              <h3 className="font-semibold text-lg mb-3">IEE Platform</h3>
-              <p className="text-base text-muted-foreground">
-                Connecting verified workers with employers for daily wage and skilled jobs.
+              <h3 className="font-bold text-xl mb-4">WorkConnect</h3>
+              <p className="text-base text-muted-foreground leading-relaxed">
+                Connecting skilled workers with employers efficiently and transparently. Build your career or find the perfect team.
               </p>
             </div>
             <div>
-              <h3 className="font-semibold text-lg mb-3">Quick Links</h3>
-              <ul className="space-y-2 text-base text-muted-foreground">
+              <h3 className="font-semibold text-lg mb-4">Quick Links</h3>
+              <ul className="space-y-3 text-base text-muted-foreground">
                 <li>
                   <a href="/" className="hover:text-foreground transition-colors">
                     Home
@@ -45,42 +45,42 @@ export default function Layout({ children }: LayoutProps) {
               </ul>
             </div>
             <div>
-              <h3 className="font-semibold text-lg mb-3">Connect</h3>
+              <h3 className="font-semibold text-lg mb-4">Connect With Us</h3>
               <div className="flex gap-4">
                 <a
                   href="#"
                   className="text-muted-foreground hover:text-foreground transition-colors"
                   aria-label="Facebook"
                 >
-                  <SiFacebook size={20} />
+                  <SiFacebook size={24} />
                 </a>
                 <a
                   href="#"
                   className="text-muted-foreground hover:text-foreground transition-colors"
                   aria-label="Twitter"
                 >
-                  <SiX size={20} />
+                  <SiX size={24} />
                 </a>
                 <a
                   href="#"
                   className="text-muted-foreground hover:text-foreground transition-colors"
                   aria-label="LinkedIn"
                 >
-                  <SiLinkedin size={20} />
+                  <SiLinkedin size={24} />
                 </a>
                 <a
                   href="#"
                   className="text-muted-foreground hover:text-foreground transition-colors"
                   aria-label="Instagram"
                 >
-                  <SiInstagram size={20} />
+                  <SiInstagram size={24} />
                 </a>
               </div>
             </div>
           </div>
-          <div className="border-t border-border mt-8 pt-6 text-center text-base text-muted-foreground">
+          <div className="border-t border-border pt-8 text-center text-base text-muted-foreground">
             <p>
-              © {currentYear} IEE Platform. Built with{' '}
+              © {currentYear} WorkConnect. Built with{' '}
               <Heart className="inline h-4 w-4 text-red-500 fill-red-500" /> using{' '}
               <a
                 href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${appIdentifier}`}

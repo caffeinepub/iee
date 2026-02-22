@@ -2,14 +2,10 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-display-worker-verification-badges-prominently-on-worker-profile-pages-and-in-employer-candidate-lists-showing-badge-icon-with-tier-color-bronze-copper-silver-gray-gold-yellow-and-job-completion-count",
-      "featureTitle": "Display worker verification badges prominently on worker profile pages and in employer candidate lists, showing badge icon with tier color (bronze/copper, silver/gray, gold/yellow) and job completion count",
+      "featureId": "feature-implement-job-browsing-interface-where-workers-can-view-all-available-job-postings-with-filters-and-search-capabilities-and-apply-to-jobs-that-match-their-skills-and-availability",
+      "featureTitle": "Implement job browsing interface where workers can view all available job postings with filters and search capabilities, and apply to jobs that match their skills and availability",
       "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/components/VerificationBadge.tsx",
-        "frontend/src/hooks/useQueries.ts",
-        "frontend/src/pages/JobCandidates.tsx",
-        "frontend/src/pages/WorkerProfile.tsx"
+        "frontend/src/pages/WorkerDashboard.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -22,45 +18,17 @@
         "camera@1.0.0"
       ],
       "testIds": [
-        "REQ-24"
+        "REQ-3"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-add-favorites-management-interface-in-employer-dashboard-showing-list-of-favorited-workers-with-their-profiles-reliability-scores-and-skills-with-quick-actions-to-view-full-profile-assign-to-job-or-remove-from-favorites",
-      "featureTitle": "Add favorites management interface in employer dashboard showing list of favorited workers with their profiles, reliability scores, and skills, with quick actions to view full profile, assign to job, or remove from favorites",
-      "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/components/FavoriteToggle.tsx",
-        "frontend/src/components/Navigation.tsx",
-        "frontend/src/hooks/useQueries.ts",
-        "frontend/src/pages/EmployerFavorites.tsx",
-        "frontend/src/pages/JobCandidates.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "qr-code@1.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "camera@1.0.0"
-      ],
-      "testIds": [
-        "REQ-26"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-add-job-templates-management-interface-allowing-employers-to-save-current-job-postings-as-templates-with-custom-names-view-template-library-and-create-new-job-postings-from-templates-with-one-click-population-of-all-fields",
-      "featureTitle": "Add job templates management interface allowing employers to save current job postings as templates with custom names, view template library, and create new job postings from templates with one-click population of all fields",
+      "featureId": "feature-integrate-internet-identity-authentication-for-secure-login-and-user-identity-management-ensuring-each-user-profile-is-associated-with-their-internet-identity-principal",
+      "featureTitle": "Integrate Internet Identity authentication for secure login and user identity management, ensuring each user profile is associated with their Internet Identity principal",
       "files": [
         "frontend/src/App.tsx",
         "frontend/src/components/Navigation.tsx",
-        "frontend/src/hooks/useQueries.ts",
-        "frontend/src/pages/CreateJobPosting.tsx",
-        "frontend/src/pages/JobTemplates.tsx"
+        "frontend/src/components/UserRoleSelector.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -73,20 +41,37 @@
         "camera@1.0.0"
       ],
       "testIds": [
-        "REQ-28"
+        "REQ-4"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-build-worker-availability-calendar-interface-with-visual-day-week-month-views-allowing-workers-to-toggle-availability-for-specific-dates-see-upcoming-scheduled-jobs-and-view-availability-patterns-at-a-glance",
-      "featureTitle": "Build worker availability calendar interface with visual day/week/month views allowing workers to toggle availability for specific dates, see upcoming scheduled jobs, and view availability patterns at a glance",
+      "featureId": "feature-create-a-landing-page-with-clear-call-to-action-for-workers-and-employers-to-register-or-login-explaining-the-platform-s-core-value-proposition",
+      "featureTitle": "Create a landing page with clear call-to-action for workers and employers to register or login, explaining the platform's core value proposition",
+      "files": [
+        "frontend/src/pages/LandingPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "qr-code@1.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "camera@1.0.0"
+      ],
+      "testIds": [
+        "REQ-5"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-role-selection-flow-where-new-users-choose-between-worker-or-employer-role-after-authentication-then-are-directed-to-the-appropriate-registration-form",
+      "featureTitle": "Implement role selection flow where new users choose between 'Worker' or 'Employer' role after authentication, then are directed to the appropriate registration form",
       "files": [
         "frontend/src/App.tsx",
-        "frontend/src/components/AvailabilityCalendar.tsx",
-        "frontend/src/components/Navigation.tsx",
-        "frontend/src/hooks/useQueries.ts",
-        "frontend/src/pages/JobCandidates.tsx",
-        "frontend/src/pages/WorkerAvailability.tsx"
+        "frontend/src/components/UserRoleSelector.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -99,42 +84,17 @@
         "camera@1.0.0"
       ],
       "testIds": [
-        "REQ-30"
+        "REQ-6"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-display-worker-availability-calendars-in-employer-candidate-review-interface-showing-which-workers-are-available-for-the-job-dates-helping-employers-make-informed-hiring-decisions-based-on-scheduling-compatibility",
-      "featureTitle": "Display worker availability calendars in employer candidate review interface showing which workers are available for the job dates, helping employers make informed hiring decisions based on scheduling compatibility",
-      "files": [
-        "frontend/src/components/AvailabilityIndicator.tsx",
-        "frontend/src/pages/JobCandidates.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "qr-code@1.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "camera@1.0.0"
-      ],
-      "testIds": [
-        "REQ-31"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-build-in-app-notification-center-for-workers-displaying-upcoming-shift-reminders-job-confirmations-and-important-alerts-with-unread-badge-count-notification-list-with-timestamps-and-mark-as-read-functionality",
-      "featureTitle": "Build in-app notification center for workers displaying upcoming shift reminders, job confirmations, and important alerts with unread badge count, notification list with timestamps, and mark as read functionality",
+      "featureId": "feature-create-separate-dashboard-views-for-workers-and-employers-worker-dashboard-shows-available-jobs-and-application-status-employer-dashboard-shows-posted-jobs-and-received-applications",
+      "featureTitle": "Create separate dashboard views for workers and employers: worker dashboard shows available jobs and application status; employer dashboard shows posted jobs and received applications",
       "files": [
         "frontend/src/App.tsx",
         "frontend/src/components/Navigation.tsx",
-        "frontend/src/components/NotificationBell.tsx",
-        "frontend/src/components/NotificationList.tsx",
-        "frontend/src/hooks/useQueries.ts",
-        "frontend/src/pages/WorkerNotifications.tsx"
+        "frontend/src/pages/WorkerDashboard.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -147,7 +107,30 @@
         "camera@1.0.0"
       ],
       "testIds": [
-        "REQ-33"
+        "REQ-7"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-apply-a-creative-and-cohesive-visual-design-theme-with-a-distinct-style-colors-typography-layout-that-reflects-the-employment-marketplace-domain-use-professional-trustworthy-aesthetics-suitable-for-connecting-workers-with-employers-ensure-consistent-styling-across-all-pages-and-components",
+      "featureTitle": "Apply a creative and cohesive visual design theme with a distinct style (colors, typography, layout) that reflects the employment marketplace domain. Use professional, trustworthy aesthetics suitable for connecting workers with employers. Ensure consistent styling across all pages and components.",
+      "files": [
+        "frontend/src/components/Layout.tsx",
+        "frontend/src/index.css",
+        "frontend/tailwind.config.js"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "qr-code@1.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "camera@1.0.0"
+      ],
+      "testIds": [
+        "REQ-8"
       ],
       "confidence": "high"
     }

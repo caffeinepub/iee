@@ -1,141 +1,224 @@
 import { useState } from 'react';
 import { useQRScanner } from '../qr-code/useQRScanner';
-import { useCheckInWorker, useCheckOutWorker, useGetMyJobPostings } from '../hooks/useQueries';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { Button } from '../components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog';
-import { Label } from '../components/ui/label';
+import { useCheckInWorker, useCheckOutWorker } from '../hooks/useQueries';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { CheckCircle, XCircle, Camera, CameraOff } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function AttendanceScanner() {
-  const { data: jobs } = useGetMyJobPostings();
-  const checkIn = useCheckInWorker();
-  const checkOut = useCheckOutWorker();
-  const [selectedJob, setSelectedJob] = useState('');
-  const [action, setAction] = useState<'checkin' | 'checkout'>('checkin');
-  const [scannedWorkerId, setScannedWorkerId] = useState('');
-  const [showDialog, setShowDialog] = useState(false);
+  const [scannedData, setScannedData] = useState<{ workerId: string; jobId: string } | null>(null);
+  const [action, setAction] = useState<'checkIn' | 'checkOut'>('checkIn');
 
   const {
     qrResults,
     isScanning,
     isActive,
+    isSupported,
     error,
+    isLoading,
+    canStartScanning,
     startScanning,
     stopScanning,
+    switchCamera,
+    clearResults,
     videoRef,
     canvasRef,
-    canStartScanning,
-  } = useQRScanner({ facingMode: 'environment' });
+  } = useQRScanner({
+    facingMode: 'environment',
+    scanInterval: 100,
+    maxResults: 5,
+  });
 
-  const handleScan = () => {
-    if (qrResults.length > 0) {
-      const latestScan = qrResults[0];
-      setScannedWorkerId(latestScan.data);
-      setShowDialog(true);
-      stopScanning();
-    }
-  };
+  const checkInMutation = useCheckInWorker();
+  const checkOutMutation = useCheckOutWorker();
 
-  const handleSubmit = async () => {
-    if (!selectedJob || !scannedWorkerId) return;
+  const handleScan = async (data: string) => {
     try {
-      if (action === 'checkin') {
-        await checkIn.mutateAsync({ jobId: selectedJob, workerId: scannedWorkerId });
-        alert('Worker checked in successfully!');
-      } else {
-        await checkOut.mutateAsync({ jobId: selectedJob, workerId: scannedWorkerId });
-        alert('Worker checked out successfully!');
+      const parsed = JSON.parse(data);
+      if (parsed.workerId && parsed.jobId) {
+        setScannedData(parsed);
+        
+        if (action === 'checkIn') {
+          await checkInMutation.mutateAsync({
+            jobId: parsed.jobId,
+            workerId: parsed.workerId,
+          });
+          toast.success('Worker checked in successfully');
+        } else {
+          await checkOutMutation.mutateAsync({
+            jobId: parsed.jobId,
+            workerId: parsed.workerId,
+          });
+          toast.success('Worker checked out successfully');
+        }
+        
+        clearResults();
+        setScannedData(null);
       }
-      setShowDialog(false);
-      setScannedWorkerId('');
-    } catch (error) {
-      alert('Failed to process attendance. Please try again.');
+    } catch (err) {
+      toast.error('Invalid QR code format');
     }
   };
 
-  if (qrResults.length > 0 && !showDialog) {
-    handleScan();
+  // Process latest QR result
+  if (qrResults.length > 0 && !scannedData) {
+    const latestResult = qrResults[0];
+    handleScan(latestResult.data);
   }
 
-  return (
-    <div className="container mx-auto px-4 py-12">
-      <h1 className="text-4xl font-bold mb-8">Attendance Scanner</h1>
-      <div className="grid md:grid-cols-2 gap-6">
+  if (isSupported === false) {
+    return (
+      <div className="container mx-auto px-4 py-8">
         <Card>
-          <CardHeader><CardTitle>QR Scanner</CardTitle></CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="relative bg-black rounded-lg overflow-hidden" style={{ aspectRatio: '4/3', minHeight: '300px' }}>
-                <video ref={videoRef} className="w-full h-full object-cover" playsInline muted autoPlay />
-                <canvas ref={canvasRef} className="hidden" />
-                {!isActive && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-                    <p className="text-white">Camera not active</p>
-                  </div>
-                )}
-              </div>
-              {error && <p className="text-destructive text-sm">{error.message}</p>}
-              <div className="flex gap-2">
-                <Button onClick={startScanning} disabled={!canStartScanning || isScanning} className="flex-1">
-                  {isScanning ? 'Scanning...' : 'Start Scanner'}
-                </Button>
-                <Button onClick={stopScanning} disabled={!isActive} variant="outline" className="flex-1">
-                  Stop Scanner
-                </Button>
-              </div>
-            </div>
-          </CardContent>
+          <CardHeader>
+            <CardTitle>Camera Not Supported</CardTitle>
+            <CardDescription>Your device does not support camera access</CardDescription>
+          </CardHeader>
         </Card>
-        <Card>
-          <CardHeader><CardTitle>Recent Scans</CardTitle></CardHeader>
-          <CardContent>
-            {qrResults.length === 0 ? (
-              <p className="text-muted-foreground text-center py-8">No scans yet</p>
-            ) : (
-              <div className="space-y-2">
-                {qrResults.slice(0, 5).map(result => (
-                  <div key={result.timestamp} className="p-3 bg-muted rounded-lg">
-                    <p className="font-mono text-sm">{result.data}</p>
-                    <p className="text-xs text-muted-foreground">{new Date(result.timestamp).toLocaleTimeString()}</p>
+      </div>
+    );
+  }
+
+  const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-2xl">Attendance Scanner</CardTitle>
+          <CardDescription>Scan worker QR codes to record attendance</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {/* Action Toggle */}
+          <div className="flex gap-2">
+            <Button
+              variant={action === 'checkIn' ? 'default' : 'outline'}
+              onClick={() => setAction('checkIn')}
+              className="flex-1"
+            >
+              <CheckCircle className="mr-2 h-4 w-4" />
+              Check In
+            </Button>
+            <Button
+              variant={action === 'checkOut' ? 'default' : 'outline'}
+              onClick={() => setAction('checkOut')}
+              className="flex-1"
+            >
+              <XCircle className="mr-2 h-4 w-4" />
+              Check Out
+            </Button>
+          </div>
+
+          {/* Camera Preview */}
+          <div className="relative w-full bg-muted rounded-lg overflow-hidden" style={{ aspectRatio: '4/3', minHeight: '300px' }}>
+            <video
+              ref={videoRef}
+              className="w-full h-full object-cover"
+              playsInline
+              muted
+              style={{ display: isActive ? 'block' : 'none' }}
+            />
+            <canvas ref={canvasRef} style={{ display: 'none' }} />
+            
+            {!isActive && (
+              <div className="absolute inset-0 flex items-center justify-center bg-muted">
+                <div className="text-center">
+                  <Camera className="mx-auto h-12 w-12 text-muted-foreground mb-2" />
+                  <p className="text-sm text-muted-foreground">Camera preview will appear here</p>
+                </div>
+              </div>
+            )}
+
+            {isActive && isScanning && (
+              <div className="absolute top-4 right-4">
+                <Badge variant="default" className="bg-green-600">
+                  Scanning...
+                </Badge>
+              </div>
+            )}
+          </div>
+
+          {/* Error Display */}
+          {error && (
+            <div className="p-4 bg-destructive/10 border border-destructive rounded-lg">
+              <p className="text-sm text-destructive font-medium">Error: {error.message}</p>
+              {error.type === 'permission' && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  Please grant camera permission to use the scanner
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* Camera Controls */}
+          <div className="flex gap-2">
+            <Button
+              onClick={startScanning}
+              disabled={!canStartScanning || isLoading}
+              className="flex-1"
+            >
+              <Camera className="mr-2 h-4 w-4" />
+              {isLoading ? 'Starting...' : 'Start Scanner'}
+            </Button>
+            <Button
+              onClick={stopScanning}
+              disabled={isLoading || !isActive}
+              variant="outline"
+              className="flex-1"
+            >
+              <CameraOff className="mr-2 h-4 w-4" />
+              Stop Scanner
+            </Button>
+            {isMobile && (
+              <Button
+                onClick={switchCamera}
+                disabled={isLoading || !isActive}
+                variant="outline"
+              >
+                Switch Camera
+              </Button>
+            )}
+          </div>
+
+          {/* Recent Scans */}
+          {qrResults.length > 0 && (
+            <div className="space-y-2">
+              <h3 className="font-medium">Recent Scans</h3>
+              <div className="space-y-2 max-h-40 overflow-y-auto">
+                {qrResults.map((result) => (
+                  <div
+                    key={result.timestamp}
+                    className="p-3 bg-muted rounded-lg text-sm"
+                  >
+                    <div className="flex justify-between items-start">
+                      <p className="font-mono text-xs break-all flex-1">{result.data}</p>
+                      <span className="text-xs text-muted-foreground ml-2 whitespace-nowrap">
+                        {new Date(result.timestamp).toLocaleTimeString()}
+                      </span>
+                    </div>
                   </div>
                 ))}
               </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+              <Button onClick={clearResults} variant="outline" size="sm" className="w-full">
+                Clear Results
+              </Button>
+            </div>
+          )}
 
-      <Dialog open={showDialog} onOpenChange={setShowDialog}>
-        <DialogContent>
-          <DialogHeader><DialogTitle>Process Attendance</DialogTitle></DialogHeader>
-          <div className="space-y-4">
-            <div><Label>Worker ID</Label><p className="font-mono mt-1">{scannedWorkerId}</p></div>
-            <div><Label htmlFor="job">Select Job</Label>
-              <Select value={selectedJob} onValueChange={setSelectedJob}>
-                <SelectTrigger><SelectValue placeholder="Choose a job" /></SelectTrigger>
-                <SelectContent>
-                  {jobs?.map(job => (
-                    <SelectItem key={job.id} value={job.id}>{job.jobDescription} ({job.id})</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div><Label htmlFor="action">Action</Label>
-              <Select value={action} onValueChange={(v) => setAction(v as 'checkin' | 'checkout')}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="checkin">Check In</SelectItem>
-                  <SelectItem value="checkout">Check Out</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <Button onClick={handleSubmit} disabled={!selectedJob || checkIn.isPending || checkOut.isPending} className="w-full">
-              {checkIn.isPending || checkOut.isPending ? 'Processing...' : 'Submit'}
-            </Button>
+          {/* Instructions */}
+          <div className="p-4 bg-muted rounded-lg">
+            <h3 className="font-medium mb-2">Instructions</h3>
+            <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside">
+              <li>Select Check In or Check Out action</li>
+              <li>Click "Start Scanner" to activate the camera</li>
+              <li>Point the camera at the worker's QR code</li>
+              <li>The system will automatically process the scan</li>
+            </ol>
           </div>
-        </DialogContent>
-      </Dialog>
+        </CardContent>
+      </Card>
     </div>
   );
 }

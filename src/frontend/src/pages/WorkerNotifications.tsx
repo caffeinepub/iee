@@ -1,115 +1,117 @@
 import { useGetWorkerNotifications, useUpdateJobReminders } from '../hooks/useQueries';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { Button } from '../components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
-import NotificationList from '../components/NotificationList';
-import { JobReminders } from '../backend';
-import { RefreshCw } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Bell, CheckCircle, AlertCircle, Calendar, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function WorkerNotifications() {
-  const { data: notifications, isLoading, refetch } = useGetWorkerNotifications();
-  const updateReminder = useUpdateJobReminders();
+  const { data: notifications, isLoading } = useGetWorkerNotifications();
+  const updateReminders = useUpdateJobReminders();
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading notifications...</p>
-        </div>
-      </div>
-    );
-  }
-
-  const allNotifications = notifications || [];
-  const unreadNotifications = allNotifications.filter((n) => !n.confirmationSent);
-  const reminders = allNotifications.filter((n) => n.reminderSent);
-  const confirmations = allNotifications.filter((n) => n.confirmationSent);
-
-  const handleMarkAsRead = async (notification: JobReminders) => {
+  const handleMarkAsRead = async (notification: any) => {
     try {
-      await updateReminder.mutateAsync({
+      await updateReminders.mutateAsync({
         ...notification,
         confirmationSent: true,
       });
       toast.success('Notification marked as read');
     } catch (error) {
-      console.error('Error marking notification as read:', error);
-      toast.error('Failed to mark notification as read');
+      toast.error('Failed to update notification');
     }
   };
 
-  const handleRefresh = () => {
-    refetch();
-    toast.success('Notifications refreshed');
-  };
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading notifications...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="container mx-auto px-4 py-12">
-      <div className="max-w-4xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <div className="flex items-center gap-3 mb-2">
-              <img
-                src="/assets/generated/icon-notification.dim_64x64.png"
-                alt="Notifications"
-                className="w-12 h-12"
-              />
-              <h1 className="text-4xl font-bold">Notifications</h1>
-            </div>
-            <p className="text-muted-foreground">
-              {unreadNotifications.length} unread notification{unreadNotifications.length !== 1 ? 's' : ''}
-            </p>
-          </div>
-          <Button onClick={handleRefresh} variant="outline" size="icon">
-            <RefreshCw className="h-4 w-4" />
-          </Button>
-        </div>
+    <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold mb-2">Notifications</h1>
+        <p className="text-muted-foreground">Stay updated with your job assignments and reminders</p>
+      </div>
 
+      {!notifications || notifications.length === 0 ? (
         <Card>
-          <CardHeader>
-            <CardTitle>Your Notifications</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Tabs defaultValue="all" className="w-full">
-              <TabsList className="grid w-full grid-cols-4">
-                <TabsTrigger value="all">
-                  All ({allNotifications.length})
-                </TabsTrigger>
-                <TabsTrigger value="unread">
-                  Unread ({unreadNotifications.length})
-                </TabsTrigger>
-                <TabsTrigger value="reminders">
-                  Reminders ({reminders.length})
-                </TabsTrigger>
-                <TabsTrigger value="confirmations">
-                  Confirmations ({confirmations.length})
-                </TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="all" className="mt-6">
-                <NotificationList notifications={allNotifications} onMarkAsRead={handleMarkAsRead} />
-              </TabsContent>
-
-              <TabsContent value="unread" className="mt-6">
-                <NotificationList
-                  notifications={unreadNotifications}
-                  onMarkAsRead={handleMarkAsRead}
-                />
-              </TabsContent>
-
-              <TabsContent value="reminders" className="mt-6">
-                <NotificationList notifications={reminders} onMarkAsRead={handleMarkAsRead} />
-              </TabsContent>
-
-              <TabsContent value="confirmations" className="mt-6">
-                <NotificationList notifications={confirmations} onMarkAsRead={handleMarkAsRead} />
-              </TabsContent>
-            </Tabs>
+          <CardContent className="py-12 text-center">
+            <Bell className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
+            <h3 className="text-lg font-semibold mb-2">No notifications yet</h3>
+            <p className="text-muted-foreground">
+              You'll receive notifications about job assignments and reminders here
+            </p>
           </CardContent>
         </Card>
-      </div>
+      ) : (
+        <div className="space-y-4">
+          {notifications.map((notification, index) => (
+            <Card key={`${notification.jobId}-${index}`}>
+              <CardHeader>
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-3">
+                    {notification.cancelled ? (
+                      <XCircle className="h-5 w-5 text-destructive" />
+                    ) : notification.confirmationSent ? (
+                      <CheckCircle className="h-5 w-5 text-green-600" />
+                    ) : notification.reminderSent ? (
+                      <Bell className="h-5 w-5 text-primary" />
+                    ) : (
+                      <Calendar className="h-5 w-5 text-blue-600" />
+                    )}
+                    <div>
+                      <CardTitle className="text-lg">
+                        {notification.cancelled
+                          ? 'Job Cancelled'
+                          : notification.confirmationSent
+                          ? 'Job Confirmed'
+                          : notification.reminderSent
+                          ? 'Job Reminder'
+                          : 'Job Assignment'}
+                      </CardTitle>
+                      <CardDescription>Job ID: {notification.jobId}</CardDescription>
+                    </div>
+                  </div>
+                  {!notification.confirmationSent && !notification.cancelled && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleMarkAsRead(notification)}
+                      disabled={updateReminders.isPending}
+                    >
+                      Mark as Read
+                    </Button>
+                  )}
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-wrap gap-2">
+                  {notification.reminderSent && (
+                    <Badge variant="secondary">Reminder Sent</Badge>
+                  )}
+                  {notification.updateSent && (
+                    <Badge variant="secondary">Update Sent</Badge>
+                  )}
+                  {notification.confirmationSent && (
+                    <Badge variant="default">Confirmed</Badge>
+                  )}
+                  {notification.cancelled && (
+                    <Badge variant="destructive">Cancelled</Badge>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

@@ -1,228 +1,59 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 7,
-  "summary": "IEE (International Employment Ecosystem) - A workforce platform connecting verified workers with employers for daily wage and skilled jobs. Web-based version with worker/employer profiles, job posting and matching, QR codes for worker identification, ratings system, and basic admin dashboard.",
+  "projectStateVersion": 3,
+  "summary": "Employment marketplace project - building Step 1 (Core Foundation) with worker registration, job posting, browsing, and Internet Identity authentication",
   "architectural_notes": [
-    "Web-based platform using Motoko backend and React TypeScript frontend",
-    "QR code generation and scanning for worker identification and attendance",
-    "Distance-based job matching algorithm prioritizing verified workers with high reliability scores",
-    "Two primary user roles: Worker and Employer, plus Admin dashboard",
-    "Platform designed for scalability from city-level to national-level expansion",
-    "Trust and security focus with unique Worker IDs and fraud detection capabilities",
-    "Monetization through per-hire service fees, bulk hiring contracts, and subscription plans"
+    "Three-step incremental build approach: Step 1 (Core Foundation), Step 2 (Profile Features), Step 3 (Advanced Features)",
+    "Currently implementing Step 1 - Core Foundation with worker registration, job posting, browsing, and Internet Identity"
   ],
-  "known_issues": [
-    "Cannot implement mobile app with Flutter/React Native - web-only platform",
-    "Cannot integrate external databases like PostgreSQL/MongoDB - limited to Motoko backend storage",
-    "Cannot implement SMS/WhatsApp services - no external messaging integration available",
-    "Cannot implement real-time GPS tracking or live location features",
-    "Cannot implement OTP-based authentication with external SMS services",
-    "Cannot implement push notifications (Firebase or similar)",
-    "Cannot implement document upload and storage for ID verification (Aadhar/Labor ID)",
-    "Cannot implement selfie verification or image processing",
-    "Cannot implement payment processing or payroll integration",
-    "Cannot implement cloud hosting on AWS/GCP - deployed on Internet Computer"
-  ],
+  "known_issues": [],
   "isFixRequest": false,
-  "imageRequirements": "## Required Images\n- Bronze badge icon illustration with copper/bronze metallic appearance (badge-bronze.dim_128x128.png)\n- Silver badge icon illustration with silver/gray metallic appearance (badge-silver.dim_128x128.png)\n- Gold badge icon illustration with gold/yellow metallic appearance (badge-gold.dim_128x128.png)\n- Star or heart icon for favorites feature in minimal style (icon-favorite.dim_64x64.png)\n- Bell icon for notification center in minimal style (icon-notification.dim_64x64.png)\n- Calendar icon for availability feature in minimal style (icon-calendar.dim_64x64.png)\n- Template or document icon for job templates in minimal style (icon-template.dim_64x64.png)",
   "existing_features": [
     {
-      "id": "feature-create-worker-authentication-system-with-profile-creation-including-fields-for-name-mobile-number-unique-auto-generated-worker-id-skills-selection-multi-select-experience-level-availability-toggle-preferred-wage-range-and-location-input",
-      "title": "Create worker authentication system with profile creation including fields for name, mobile number, unique auto-generated Worker ID, skills selection (multi-select), experience level, availability toggle, preferred wage range, and location input",
-      "reqIds": [
-        "REQ-1"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-generate-and-display-unique-qr-code-for-each-worker-based-on-their-worker-id-that-can-be-used-for-identification-and-attendance-tracking",
-      "title": "Generate and display unique QR code for each worker based on their Worker ID that can be used for identification and attendance tracking",
-      "reqIds": [
-        "REQ-2"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-create-employer-authentication-system-with-company-profile-setup-including-fields-for-company-name-contact-person-mobile-number-company-type-and-location",
-      "title": "Create employer authentication system with company profile setup including fields for company name, contact person, mobile number, company type, and location",
+      "id": "feature-implement-job-browsing-interface-where-workers-can-view-all-available-job-postings-with-filters-and-search-capabilities-and-apply-to-jobs-that-match-their-skills-and-availability",
+      "title": "Implement job browsing interface where workers can view all available job postings with filters and search capabilities, and apply to jobs that match their skills and availability",
       "reqIds": [
         "REQ-3"
       ],
       "version": 1
     },
     {
-      "id": "feature-build-job-posting-system-for-employers-to-create-single-or-bulk-job-listings-with-fields-for-required-skill-wage-amount-duration-shift-timing-number-of-workers-needed-job-location-and-job-description",
-      "title": "Build job posting system for employers to create single or bulk job listings with fields for required skill, wage amount, duration, shift timing, number of workers needed, job location, and job description",
+      "id": "feature-integrate-internet-identity-authentication-for-secure-login-and-user-identity-management-ensuring-each-user-profile-is-associated-with-their-internet-identity-principal",
+      "title": "Integrate Internet Identity authentication for secure login and user identity management, ensuring each user profile is associated with their Internet Identity principal",
       "reqIds": [
         "REQ-4"
       ],
       "version": 1
     },
     {
-      "id": "feature-create-job-discovery-interface-for-workers-showing-nearby-job-listings-with-filters-for-distance-wage-range-and-duration-with-ability-to-accept-or-reject-job-offers-and-view-real-time-job-status",
-      "title": "Create job discovery interface for workers showing nearby job listings with filters for distance, wage range, and duration, with ability to accept or reject job offers and view real-time job status",
+      "id": "feature-create-a-landing-page-with-clear-call-to-action-for-workers-and-employers-to-register-or-login-explaining-the-platform-s-core-value-proposition",
+      "title": "Create a landing page with clear call-to-action for workers and employers to register or login, explaining the platform's core value proposition",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-role-selection-flow-where-new-users-choose-between-worker-or-employer-role-after-authentication-then-are-directed-to-the-appropriate-registration-form",
+      "title": "Implement role selection flow where new users choose between 'Worker' or 'Employer' role after authentication, then are directed to the appropriate registration form",
       "reqIds": [
         "REQ-6"
       ],
       "version": 1
     },
     {
-      "id": "feature-build-qr-based-attendance-tracking-system-where-employers-can-scan-worker-qr-codes-for-check-in-and-check-out-with-work-history-tracking-and-job-completion-records-stored-per-worker",
-      "title": "Build QR-based attendance tracking system where employers can scan worker QR codes for check-in and check-out, with work history tracking and job completion records stored per worker",
+      "id": "feature-create-separate-dashboard-views-for-workers-and-employers-worker-dashboard-shows-available-jobs-and-application-status-employer-dashboard-shows-posted-jobs-and-received-applications",
+      "title": "Create separate dashboard views for workers and employers: worker dashboard shows available jobs and application status; employer dashboard shows posted jobs and received applications",
       "reqIds": [
         "REQ-7"
       ],
       "version": 1
     },
     {
-      "id": "feature-implement-rating-and-reliability-score-system-where-employers-can-rate-workers-after-job-completion-on-a-5-star-scale-with-optional-remarks-and-calculate-cumulative-reliability-score-based-on-ratings-attendance-history-and-job-completion-rate",
-      "title": "Implement rating and reliability score system where employers can rate workers after job completion on a 5-star scale with optional remarks, and calculate cumulative reliability score based on ratings, attendance history, and job completion rate",
+      "id": "feature-apply-a-creative-and-cohesive-visual-design-theme-with-a-distinct-style-colors-typography-layout-that-reflects-the-employment-marketplace-domain-use-professional-trustworthy-aesthetics-suitable-for-connecting-workers-with-employers-ensure-consistent-styling-across-all-pages-and-components",
+      "title": "Apply a creative and cohesive visual design theme with a distinct style (colors, typography, layout) that reflects the employment marketplace domain. Use professional, trustworthy aesthetics suitable for connecting workers with employers. Ensure consistent styling across all pages and components.",
       "reqIds": [
         "REQ-8"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-create-payment-tracking-interface-for-workers-showing-payment-status-for-each-completed-job-earning-history-with-date-and-amount-and-total-earnings-summary",
-      "title": "Create payment tracking interface for workers showing payment status for each completed job, earning history with date and amount, and total earnings summary",
-      "reqIds": [
-        "REQ-9"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-build-employer-workforce-management-dashboard-showing-list-of-hired-workers-live-attendance-status-for-current-jobs-ability-to-request-worker-replacement-and-workforce-analytics-including-total-hires-completion-rates-and-average-ratings",
-      "title": "Build employer workforce management dashboard showing list of hired workers, live attendance status for current jobs, ability to request worker replacement, and workforce analytics including total hires, completion rates, and average ratings",
-      "reqIds": [
-        "REQ-10"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-create-admin-dashboard-with-system-wide-metrics-including-total-workers-registered-active-employers-count-total-jobs-posted-job-fill-rate-percentage-average-time-to-fill-jobs-worker-retention-rate-and-employer-retention-rate",
-      "title": "Create admin dashboard with system-wide metrics including total workers registered, active employers count, total jobs posted, job fill rate percentage, average time to fill jobs, worker retention rate, and employer retention rate",
-      "reqIds": [
-        "REQ-11"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-employer-job-candidate-review-interface-showing-matched-workers-for-each-job-posting-with-their-reliability-scores-skills-and-distance-with-ability-to-confirm-worker-slots-and-view-auto-fill-suggestions-for-bulk-hiring",
-      "title": "Implement employer job candidate review interface showing matched workers for each job posting with their reliability scores, skills, and distance, with ability to confirm worker slots and view auto-fill suggestions for bulk hiring",
-      "reqIds": [
-        "REQ-12"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-design-modern-professional-and-minimal-user-interface-with-intuitive-navigation-optimized-for-ease-of-use-using-a-clean-color-scheme-that-avoids-blue-and-purple-with-large-touch-targets-and-clear-typography-suitable-for-users-with-varying-literacy-levels",
-      "title": "Design modern, professional, and minimal user interface with intuitive navigation optimized for ease of use, using a clean color scheme that avoids blue and purple, with large touch targets and clear typography suitable for users with varying literacy levels",
-      "reqIds": [
-        "REQ-13"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-create-enhanced-employer-analytics-dashboard-showing-workforce-performance-insights-including-average-worker-reliability-score-by-skill-category-job-completion-rate-trends-over-time-average-time-to-fill-metrics-per-job-type-worker-retention-rate-calculation-and-top-performing-workers-leaderboard",
-      "title": "Create enhanced employer analytics dashboard showing workforce performance insights including average worker reliability score by skill category, job completion rate trends over time, average time-to-fill metrics per job type, worker retention rate calculation, and top-performing workers leaderboard",
-      "reqIds": [
-        "REQ-16"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-expand-admin-dashboard-with-deeper-kpi-analytics-including-monthly-fill-rate-trends-chart-worker-and-employer-retention-metrics-calculated-over-30-60-90-day-periods-revenue-tracking-simulation-showing-total-transaction-volume-average-revenue-per-job-and-subscription-tier-distribution-breakdown",
-      "title": "Expand admin dashboard with deeper KPI analytics including monthly fill rate trends chart, worker and employer retention metrics calculated over 30/60/90 day periods, revenue tracking simulation showing total transaction volume, average revenue per job, and subscription tier distribution breakdown",
-      "reqIds": [
-        "REQ-17"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-create-subscription-tier-management-interface-for-employers-showing-available-tiers-basic-professional-enterprise-with-feature-comparison-table-current-active-tier-with-expiration-date-upgrade-downgrade-options-and-tier-based-limitations-display-e-g-job-posting-limits-candidate-access-limits",
-      "title": "Create subscription tier management interface for employers showing available tiers (Basic/Professional/Enterprise) with feature comparison table, current active tier with expiration date, upgrade/downgrade options, and tier-based limitations display (e.g., job posting limits, candidate access limits)",
-      "reqIds": [
-        "REQ-18"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-build-comprehensive-work-history-analytics-page-for-workers-showing-attendance-statistics-total-days-worked-on-time-percentage-early-departure-count-earnings-breakdown-by-skill-category-job-completion-rate-with-visual-progress-indicator-and-monthly-work-pattern-calendar-heatmap",
-      "title": "Build comprehensive work history analytics page for workers showing attendance statistics (total days worked, on-time percentage, early departure count), earnings breakdown by skill category, job completion rate with visual progress indicator, and monthly work pattern calendar heatmap",
-      "reqIds": [
-        "REQ-19"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-refine-the-ui-design-system-with-professional-minimal-aesthetic-using-a-clean-color-scheme-that-avoids-blue-and-purple-implementing-consistent-spacing-scale-improved-typography-hierarchy-with-larger-font-sizes-for-better-readability-enhanced-accessibility-with-wcag-aa-contrast-ratios-and-simplified-navigation-flows-with-clear-visual-hierarchy",
-      "title": "Refine the UI design system with professional, minimal aesthetic using a clean color scheme that avoids blue and purple, implementing consistent spacing scale, improved typography hierarchy with larger font sizes for better readability, enhanced accessibility with WCAG AA contrast ratios, and simplified navigation flows with clear visual hierarchy",
-      "reqIds": [
-        "REQ-20"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-enhance-payment-tracking-ledger-for-workers-with-detailed-transaction-history-showing-payment-method-simulation-payment-date-with-time-job-reference-with-clickable-links-to-job-details-payment-status-badges-pending-completed-failed-running-balance-calculation-and-export-functionality-for-csv-download",
-      "title": "Enhance payment tracking ledger for workers with detailed transaction history showing payment method simulation, payment date with time, job reference with clickable links to job details, payment status badges (pending/completed/failed), running balance calculation, and export functionality for CSV download",
-      "reqIds": [
-        "REQ-21"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-job-posting-bulk-upload-feature-for-employers-to-create-multiple-job-listings-at-once-using-csv-template-with-validation-for-required-fields-preview-of-parsed-jobs-before-submission-error-reporting-for-invalid-entries-and-confirmation-of-successfully-created-jobs",
-      "title": "Add job posting bulk upload feature for employers to create multiple job listings at once using CSV template, with validation for required fields, preview of parsed jobs before submission, error reporting for invalid entries, and confirmation of successfully created jobs",
-      "reqIds": [
-        "REQ-22"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-display-worker-verification-badges-prominently-on-worker-profile-pages-and-in-employer-candidate-lists-showing-badge-icon-with-tier-color-bronze-copper-silver-gray-gold-yellow-and-job-completion-count",
-      "title": "Display worker verification badges prominently on worker profile pages and in employer candidate lists, showing badge icon with tier color (bronze/copper, silver/gray, gold/yellow) and job completion count",
-      "reqIds": [
-        "REQ-24"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-favorites-management-interface-in-employer-dashboard-showing-list-of-favorited-workers-with-their-profiles-reliability-scores-and-skills-with-quick-actions-to-view-full-profile-assign-to-job-or-remove-from-favorites",
-      "title": "Add favorites management interface in employer dashboard showing list of favorited workers with their profiles, reliability scores, and skills, with quick actions to view full profile, assign to job, or remove from favorites",
-      "reqIds": [
-        "REQ-26"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-job-templates-management-interface-allowing-employers-to-save-current-job-postings-as-templates-with-custom-names-view-template-library-and-create-new-job-postings-from-templates-with-one-click-population-of-all-fields",
-      "title": "Add job templates management interface allowing employers to save current job postings as templates with custom names, view template library, and create new job postings from templates with one-click population of all fields",
-      "reqIds": [
-        "REQ-28"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-build-worker-availability-calendar-interface-with-visual-day-week-month-views-allowing-workers-to-toggle-availability-for-specific-dates-see-upcoming-scheduled-jobs-and-view-availability-patterns-at-a-glance",
-      "title": "Build worker availability calendar interface with visual day/week/month views allowing workers to toggle availability for specific dates, see upcoming scheduled jobs, and view availability patterns at a glance",
-      "reqIds": [
-        "REQ-30"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-display-worker-availability-calendars-in-employer-candidate-review-interface-showing-which-workers-are-available-for-the-job-dates-helping-employers-make-informed-hiring-decisions-based-on-scheduling-compatibility",
-      "title": "Display worker availability calendars in employer candidate review interface showing which workers are available for the job dates, helping employers make informed hiring decisions based on scheduling compatibility",
-      "reqIds": [
-        "REQ-31"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-build-in-app-notification-center-for-workers-displaying-upcoming-shift-reminders-job-confirmations-and-important-alerts-with-unread-badge-count-notification-list-with-timestamps-and-mark-as-read-functionality",
-      "title": "Build in-app notification center for workers displaying upcoming shift reminders, job confirmations, and important alerts with unread badge count, notification list with timestamps, and mark as read functionality",
-      "reqIds": [
-        "REQ-33"
       ],
       "version": 1
     }
@@ -230,161 +61,70 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Worker authentication and profile system with OTP login, profile creation, skills selection, experience level, availability toggle, and unique Worker ID with QR code",
+      "summary": "Worker registration with essential fields (name, mobile, location, primary skills, experience, wage range)",
       "reqIds": [],
-      "status": "pending"
+      "status": "in_progress"
     },
     {
       "id": "AR-2",
-      "summary": "Employer authentication and company profile setup with OTP login",
+      "summary": "Basic job posting (title, description, required skills, wage, location, dates)",
       "reqIds": [],
-      "status": "pending"
+      "status": "in_progress"
     },
     {
       "id": "AR-3",
-      "summary": "Job posting system for employers to create single or bulk jobs with skill requirements, wage, duration, shift timing, number of workers needed, and location",
+      "summary": "Simple job browsing and application flow",
       "reqIds": [],
-      "status": "pending"
+      "status": "in_progress"
     },
     {
       "id": "AR-4",
-      "summary": "Job matching system that connects workers with nearby jobs based on skill match, distance, availability, and reliability score",
+      "summary": "Internet Identity authentication",
       "reqIds": [],
-      "status": "pending"
+      "status": "in_progress"
     },
     {
       "id": "AR-5",
-      "summary": "QR-based attendance tracking system for worker check-in/check-out and work history",
+      "summary": "Photo and document uploads for workers",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-6",
-      "summary": "Rating and reliability score system for workers, including performance tracking and skill status indicators",
+      "summary": "Worker ID generation system",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-7",
-      "summary": "Payment tracking system showing payment status, earning history, and job completion records",
+      "summary": "Additional optional profile fields",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-8",
-      "summary": "Admin dashboard with metrics including total workers, active employers, jobs posted, fill rate, and retention analytics",
+      "summary": "Verification status tracking",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-9",
-      "summary": "Employer workforce management features including live attendance tracking, replacement requests, and analytics dashboard",
-      "reqIds": [],
+      "summary": "Implement worker registration with essential fields: full name, mobile number, location (latitude/longitude coordinates), primary skills (multi-select from predefined list), years of experience, and wage range (minimum and maximum per day in currency units)",
+      "reqIds": [
+        "REQ-1"
+      ],
       "status": "pending"
     },
     {
       "id": "AR-10",
-      "summary": "Basic notification system for job alerts and updates",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-15",
-      "summary": "Implement job matching algorithm that matches workers to jobs based on skill match percentage, distance radius from job location, worker availability status, and reliability score with priority given to verified workers with high reliability scores",
+      "summary": "Implement basic job posting functionality for employers including job title, detailed description, list of required skills, offered wage per day, location coordinates, start date, end date, and number of positions available",
       "reqIds": [
-        "REQ-5"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-16",
-      "summary": "Implement weighted job matching algorithm that calculates composite match scores based on skill match percentage (40% weight), distance from job location (30% weight), worker reliability score (20% weight), and worker availability status (10% weight), displaying match scores to employers in candidate lists",
-      "reqIds": [
-        "REQ-14"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-17",
-      "summary": "Enhance worker profile data model to include detailed skill categorization with proficiency levels (beginner/intermediate/expert) for each skill, total years of experience per skill category, and certification status flags",
-      "reqIds": [
-        "REQ-15"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-18",
-      "summary": "Worker verification badges showing milestone achievements (bronze/silver/gold) for 10, 50, and 100 jobs completed, displayed on worker profiles",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-19",
-      "summary": "Employer favorites list allowing employers to save and quickly access preferred workers for future hiring",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-20",
-      "summary": "Job templates system enabling employers to save job configurations and quickly repost similar positions",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-21",
-      "summary": "Worker availability calendar with visual day/week/month views showing worker availability patterns for better scheduling coordination",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-22",
-      "summary": "Automated job reminders with in-app notification center displaying upcoming shifts, job confirmations, and important alerts for workers",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-23",
-      "summary": "Create worker verification badge system with three milestone tiers: Bronze badge for 10 completed jobs, Silver badge for 50 completed jobs, and Gold badge for 100 completed jobs, calculating badge level based on completed job count from attendance records",
-      "reqIds": [
-        "REQ-23"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-25",
-      "summary": "Create employer favorites list system allowing employers to save preferred workers to a favorites collection, with ability to add workers from candidate lists or worker profiles and remove workers from favorites",
-      "reqIds": [
-        "REQ-25"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-27",
-      "summary": "Implement job templates system allowing employers to save job posting configurations as reusable templates, storing skill requirements, wage amount, duration, shift timing, and job description",
-      "reqIds": [
-        "REQ-27"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-29",
-      "summary": "Create worker availability calendar data model storing availability patterns per worker with day-level granularity, allowing workers to mark days as available or unavailable with optional time range specifications",
-      "reqIds": [
-        "REQ-29"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-32",
-      "summary": "Create job reminders system generating notification records for workers about upcoming shifts within 24 hours, job confirmations when assigned to jobs, and important job updates or cancellations",
-      "reqIds": [
-        "REQ-32"
+        "REQ-2"
       ],
       "status": "pending"
     }
   ],
-  "gameProjectType": "none",
-  "projectName": "IEE",
+  "projectName": "WorkConnect",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

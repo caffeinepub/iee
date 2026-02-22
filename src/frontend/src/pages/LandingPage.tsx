@@ -16,7 +16,7 @@ export default function LandingPage() {
   useEffect(() => {
     if (isAuthenticated && isFetched && userProfile) {
       if (userProfile.role === 'worker') {
-        navigate({ to: '/worker/jobs' });
+        navigate({ to: '/worker/dashboard' });
       } else if (userProfile.role === 'employer') {
         navigate({ to: '/employer/dashboard' });
       }
@@ -51,10 +51,10 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
               <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-                Connect Workers with Opportunities
+                Connect Skilled Workers with Employers
               </h1>
-              <p className="text-xl text-muted-foreground mb-8">
-                IEE is a trusted workforce platform connecting verified workers with employers for daily wage and
+              <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
+                WorkConnect is a trusted workforce platform connecting verified workers with employers for daily wage and
                 skilled jobs. Build your career or find the perfect team.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
@@ -62,15 +62,12 @@ export default function LandingPage() {
                   {isLoggingIn ? 'Logging in...' : 'Get Started'}
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
-                <Button size="lg" variant="outline" className="text-lg h-14 px-8">
-                  Learn More
-                </Button>
               </div>
             </div>
             <div className="relative">
               <img
                 src="/assets/generated/hero-banner.dim_1200x400.png"
-                alt="IEE Platform"
+                alt="WorkConnect Platform"
                 className="rounded-lg shadow-2xl w-full"
               />
             </div>
@@ -81,7 +78,7 @@ export default function LandingPage() {
       <section className="py-20 bg-card">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Why Choose IEE?</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Why Choose WorkConnect?</h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               A modern platform designed for trust, efficiency, and growth
             </p>
@@ -95,7 +92,7 @@ export default function LandingPage() {
                 </div>
                 <h3 className="text-xl font-semibold mb-2">Verified Workers</h3>
                 <p className="text-muted-foreground">
-                  All workers are verified with unique IDs and QR codes for secure identification
+                  All workers are verified with unique profiles and reliability scores for secure identification
                 </p>
               </CardContent>
             </Card>
@@ -107,7 +104,7 @@ export default function LandingPage() {
                 </div>
                 <h3 className="text-xl font-semibold mb-2">Smart Matching</h3>
                 <p className="text-muted-foreground">
-                  AI-powered job matching based on skills, location, and reliability scores
+                  Intelligent job matching based on skills, location, and experience levels
                 </p>
               </CardContent>
             </Card>
@@ -117,9 +114,9 @@ export default function LandingPage() {
                 <div className="bg-primary/10 w-14 h-14 rounded-lg flex items-center justify-center mb-4">
                   <CheckCircle className="h-7 w-7 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Easy Attendance</h3>
+                <h3 className="text-xl font-semibold mb-2">Easy Registration</h3>
                 <p className="text-muted-foreground">
-                  QR-based check-in/check-out system for seamless attendance tracking
+                  Quick and simple registration process for both workers and employers
                 </p>
               </CardContent>
             </Card>
@@ -129,9 +126,9 @@ export default function LandingPage() {
                 <div className="bg-primary/10 w-14 h-14 rounded-lg flex items-center justify-center mb-4">
                   <Briefcase className="h-7 w-7 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Bulk Hiring</h3>
+                <h3 className="text-xl font-semibold mb-2">Job Management</h3>
                 <p className="text-muted-foreground">
-                  Post jobs for multiple workers and fill positions quickly with auto-matching
+                  Post jobs quickly and manage applications with an intuitive dashboard
                 </p>
               </CardContent>
             </Card>
@@ -142,7 +139,7 @@ export default function LandingPage() {
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-12">
-            <Card className="p-8 border-2">
+            <Card className="p-8 border-2 hover:shadow-lg transition-shadow">
               <div className="flex items-center gap-4 mb-6">
                 <img
                   src="/assets/generated/worker-icon.dim_128x128.png"
@@ -157,15 +154,15 @@ export default function LandingPage() {
               <ul className="space-y-3 mb-6">
                 <li className="flex items-start gap-3">
                   <CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                  <span>Create your verified profile with skills and experience</span>
+                  <span>Create your profile with skills and experience</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                  <span>Get matched with nearby jobs based on your skills</span>
+                  <span>Browse and apply to jobs matching your skills</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                  <span>Track your work history and earnings</span>
+                  <span>Track your work history and applications</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
@@ -177,7 +174,7 @@ export default function LandingPage() {
               </Button>
             </Card>
 
-            <Card className="p-8 border-2">
+            <Card className="p-8 border-2 hover:shadow-lg transition-shadow">
               <div className="flex items-center gap-4 mb-6">
                 <img
                   src="/assets/generated/employer-icon.dim_128x128.png"
@@ -192,7 +189,7 @@ export default function LandingPage() {
               <ul className="space-y-3 mb-6">
                 <li className="flex items-start gap-3">
                   <CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                  <span>Post single or bulk job openings instantly</span>
+                  <span>Post job openings with detailed requirements</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
@@ -200,11 +197,11 @@ export default function LandingPage() {
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                  <span>Track attendance with QR code scanning</span>
+                  <span>Manage job postings and applications</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                  <span>Manage workforce with analytics dashboard</span>
+                  <span>Access workforce analytics and insights</span>
                 </li>
               </ul>
               <Button size="lg" onClick={handleLogin} disabled={isLoggingIn} className="w-full">

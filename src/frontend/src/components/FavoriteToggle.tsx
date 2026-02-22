@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Heart } from 'lucide-react';
 import { Button } from './ui/button';
 import { useAddFavoriteWorker, useRemoveFavoriteWorker } from '../hooks/useQueries';
@@ -10,43 +9,33 @@ interface FavoriteToggleProps {
 }
 
 export default function FavoriteToggle({ workerId, isFavorited }: FavoriteToggleProps) {
-  const [isOptimisticFavorited, setIsOptimisticFavorited] = useState(isFavorited);
   const addFavorite = useAddFavoriteWorker();
   const removeFavorite = useRemoveFavoriteWorker();
 
   const handleToggle = async () => {
-    const newState = !isOptimisticFavorited;
-    setIsOptimisticFavorited(newState);
-
     try {
-      if (newState) {
-        await addFavorite.mutateAsync(workerId);
-        toast.success('Worker added to favorites');
-      } else {
+      if (isFavorited) {
         await removeFavorite.mutateAsync(workerId);
-        toast.success('Worker removed from favorites');
+        toast.success('Removed from favorites');
+      } else {
+        await addFavorite.mutateAsync(workerId);
+        toast.success('Added to favorites');
       }
     } catch (error) {
-      setIsOptimisticFavorited(!newState);
       toast.error('Failed to update favorites');
-      console.error('Error toggling favorite:', error);
     }
   };
-
-  const isLoading = addFavorite.isPending || removeFavorite.isPending;
 
   return (
     <Button
       variant="ghost"
       size="icon"
       onClick={handleToggle}
-      disabled={isLoading}
-      className="relative"
+      disabled={addFavorite.isPending || removeFavorite.isPending}
+      className="h-8 w-8"
     >
       <Heart
-        className={`h-5 w-5 transition-all ${
-          isOptimisticFavorited ? 'fill-red-500 text-red-500' : 'text-muted-foreground'
-        }`}
+        className={`h-4 w-4 ${isFavorited ? 'fill-red-500 text-red-500' : 'text-muted-foreground'}`}
       />
     </Button>
   );

@@ -1,13 +1,16 @@
 # Specification
 
 ## Summary
-**Goal:** Add worker verification badges, employer favorites, job templates, availability calendar, and job reminders to enhance platform functionality.
+**Goal:** Build the core foundation for WorkConnect, an employment marketplace connecting workers with employers through secure authentication, profile registration, job posting, and job browsing capabilities.
 
 **Planned changes:**
-- Implement three-tier worker verification badge system (Bronze/Silver/Gold) based on completed job count
-- Add employer favorites list to save and manage preferred workers
-- Create job templates system for reusable job posting configurations
-- Build worker availability calendar with day/week/month views
-- Implement in-app notification center with job reminders and alerts
+- Implement Internet Identity authentication for secure login
+- Create role selection flow (Worker or Employer) for new users
+- Build worker registration with essential fields (name, mobile, location, skills, experience, wage range)
+- Build employer job posting functionality (title, description, skills, wage, location, dates, positions)
+- Implement job browsing interface with application functionality for workers
+- Create separate dashboards for workers (view jobs, track applications) and employers (view posted jobs, see applications)
+- Design landing page with clear call-to-action for registration and login
+- Apply professional, cohesive visual design theme suitable for employment marketplace
 
-**User-visible outcome:** Workers earn verification badges as they complete jobs, can manage their availability calendar, and receive in-app notifications for upcoming shifts. Employers can save favorite workers, create reusable job templates, and view worker availability when reviewing candidates.
+**User-visible outcome:** Users can authenticate with Internet Identity, register as either a worker or employer, post or browse jobs, and manage their profiles and applications through role-specific dashboards with a professional, trustworthy interface.

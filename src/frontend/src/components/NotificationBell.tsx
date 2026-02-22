@@ -1,14 +1,14 @@
 import { Bell } from 'lucide-react';
 import { Button } from './ui/button';
-import { useGetWorkerNotifications } from '../hooks/useQueries';
-import { useNavigate } from '@tanstack/react-router';
 import { Badge } from './ui/badge';
+import { useNavigate } from '@tanstack/react-router';
+import { useGetWorkerNotifications } from '../hooks/useQueries';
 
 export default function NotificationBell() {
-  const { data: notifications } = useGetWorkerNotifications();
   const navigate = useNavigate();
+  const { data: notifications } = useGetWorkerNotifications();
 
-  const unreadCount = notifications?.filter(n => !n.confirmationSent).length || 0;
+  const unreadCount = notifications?.filter((n) => !n.confirmationSent).length || 0;
 
   return (
     <Button
@@ -17,11 +17,7 @@ export default function NotificationBell() {
       className="relative"
       onClick={() => navigate({ to: '/worker/notifications' })}
     >
-      <img
-        src="/assets/generated/icon-notification.dim_64x64.png"
-        alt="Notifications"
-        className="w-5 h-5"
-      />
+      <Bell className="h-5 w-5" />
       {unreadCount > 0 && (
         <Badge
           variant="destructive"

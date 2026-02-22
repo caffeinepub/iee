@@ -13,9 +13,7 @@ import Principal "mo:core/Principal";
 
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
-import Migration "migration";
 
-(with migration = Migration.run)
 actor {
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
@@ -294,6 +292,13 @@ actor {
       Runtime.trap("Unauthorized: Only users can create worker profiles");
     };
 
+    // Check if worker profile already exists for this caller
+    for ((id, profile) in workerProfiles.entries()) {
+      if (profile.principal == caller) {
+        Runtime.trap("Worker profile already exists for this user");
+      };
+    };
+
     let workerId = "W" # nextWorkerId.toText();
     nextWorkerId += 1;
 
@@ -373,6 +378,7 @@ actor {
 
     let profile = workerProfiles.get(workerId);
     switch (profile) {
+      case (null) { Runtime.trap("Worker profile not found") };
       case (?p) {
         if (p.principal != caller) {
           Runtime.trap("Unauthorized: Can only update your own profile");
@@ -382,7 +388,6 @@ actor {
         };
         workerProfiles.add(workerId, updated);
       };
-      case (null) { Runtime.trap("Worker profile not found") };
     };
   };
 
@@ -391,6 +396,12 @@ actor {
     if (not AccessControl.hasPermission(accessControlState, caller, #user)) {
       Runtime.trap("Unauthorized: Only users can save profiles");
     };
+    
+    // Verify that the profile's principal matches the caller
+    if (profile.principal != caller) {
+      Runtime.trap("Unauthorized: Can only save your own employer profile");
+    };
+    
     employerProfiles.add(caller, profile);
   };
 
@@ -621,12 +632,12 @@ actor {
             let isWorkerSelf = w.principal == caller;
             let isAssigned = job.assignedWorkers.filter(func(id) { id == workerId }).size() > 0;
 
-            if (not isEmployer and not isWorkerSelf) {
-              Runtime.trap("Unauthorized: Can only check in workers for your own jobs or check yourself in");
-            };
-
             if (not isAssigned) {
               Runtime.trap("Worker is not assigned to this job");
+            };
+
+            if (not isEmployer and not isWorkerSelf) {
+              Runtime.trap("Unauthorized: Can only check in workers for your own jobs or check yourself in");
             };
 
             let record : AttendanceRecord = {
@@ -663,12 +674,12 @@ actor {
             let isWorkerSelf = w.principal == caller;
             let isAssigned = job.assignedWorkers.filter(func(id) { id == workerId }).size() > 0;
 
-            if (not isEmployer and not isWorkerSelf) {
-              Runtime.trap("Unauthorized: Can only check out workers for your own jobs or check yourself out");
-            };
-
             if (not isAssigned) {
               Runtime.trap("Worker is not assigned to this job");
+            };
+
+            if (not isEmployer and not isWorkerSelf) {
+              Runtime.trap("Unauthorized: Can only check out workers for your own jobs or check yourself out");
             };
 
             let updatedRecords = w.attendanceRecords.map(
@@ -916,7 +927,7 @@ actor {
     if (not AccessControl.hasPermission(accessControlState, caller, #user)) {
       Runtime.trap("Unauthorized: Only users can add favorites");
     };
-    if (caller != employerId and not AccessControl.isAdmin(accessControlState, caller)) {
+    if (caller != employerId) {
       Runtime.trap("Unauthorized: Can only add favorites to your own list");
     };
   };
@@ -925,7 +936,7 @@ actor {
     if (not AccessControl.hasPermission(accessControlState, caller, #user)) {
       Runtime.trap("Unauthorized: Only users can remove favorites");
     };
-    if (caller != employerId and not AccessControl.isAdmin(accessControlState, caller)) {
+    if (caller != employerId) {
       Runtime.trap("Unauthorized: Can only remove favorites from your own list");
     };
   };

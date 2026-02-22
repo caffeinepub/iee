@@ -1,201 +1,133 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-21T19:07:41.349Z",
+  "generatedAt": "2026-02-22T12:40:44.532Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 11,
+    "total": 8,
     "implemented": 6,
     "items": [
       {
-        "id": "REQ-23",
-        "summary": "Create worker verification badge system with three milestone tiers: Bronze badge for 10 completed jobs, Silver badge for 50 completed jobs, and Gold badge for 100 completed jobs, calculating badge level based on completed job count from attendance records",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-24",
-        "summary": "Display worker verification badges prominently on worker profile pages and in employer candidate lists, showing badge icon with tier color (bronze/copper, silver/gray, gold/yellow) and job completion count",
-        "status": "implemented",
+        "id": "REQ-1",
+        "summary": "Implement worker registration with essential fields: full name, mobile number, location (latitude/longitude coordinates), primary skills (multi-select from predefined list), years of experience, and wage range (minimum and maximum per day in currency units)",
+        "status": "missing",
         "plannedFiles": [
-          "frontend/src/components/VerificationBadge.tsx",
-          "frontend/src/hooks/useQueries.ts",
-          "frontend/src/pages/WorkerProfile.tsx",
-          "frontend/src/pages/JobCandidates.tsx",
-          "frontend/src/App.tsx"
+          "frontend/src/pages/WorkerRegistration.tsx",
+          "frontend/src/pages/WorkerProfile.tsx"
         ],
-        "matchedFiles": [
-          "frontend/src/components/VerificationBadge.tsx",
-          "frontend/src/hooks/useQueries.ts",
-          "frontend/src/pages/WorkerProfile.tsx",
-          "frontend/src/pages/JobCandidates.tsx",
-          "frontend/src/App.tsx"
-        ]
-      },
-      {
-        "id": "REQ-25",
-        "summary": "Create employer favorites list system allowing employers to save preferred workers to a favorites collection, with ability to add workers from candidate lists or worker profiles and remove workers from favorites",
-        "status": "unknown",
-        "plannedFiles": [],
         "matchedFiles": []
       },
       {
-        "id": "REQ-26",
-        "summary": "Add favorites management interface in employer dashboard showing list of favorited workers with their profiles, reliability scores, and skills, with quick actions to view full profile, assign to job, or remove from favorites",
-        "status": "implemented",
+        "id": "REQ-2",
+        "summary": "Implement basic job posting functionality for employers including job title, detailed description, list of required skills, offered wage per day, location coordinates, start date, end date, and number of positions available",
+        "status": "missing",
         "plannedFiles": [
-          "frontend/src/hooks/useQueries.ts",
-          "frontend/src/components/FavoriteToggle.tsx",
-          "frontend/src/pages/EmployerFavorites.tsx",
-          "frontend/src/App.tsx",
-          "frontend/src/pages/JobCandidates.tsx",
-          "frontend/src/components/Navigation.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/hooks/useQueries.ts",
-          "frontend/src/components/FavoriteToggle.tsx",
-          "frontend/src/pages/EmployerFavorites.tsx",
-          "frontend/src/App.tsx",
-          "frontend/src/pages/JobCandidates.tsx",
-          "frontend/src/components/Navigation.tsx"
-        ]
-      },
-      {
-        "id": "REQ-27",
-        "summary": "Implement job templates system allowing employers to save job posting configurations as reusable templates, storing skill requirements, wage amount, duration, shift timing, and job description",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-28",
-        "summary": "Add job templates management interface allowing employers to save current job postings as templates with custom names, view template library, and create new job postings from templates with one-click population of all fields",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/hooks/useQueries.ts",
           "frontend/src/pages/CreateJobPosting.tsx",
-          "frontend/src/pages/JobTemplates.tsx",
-          "frontend/src/App.tsx",
-          "frontend/src/components/Navigation.tsx"
+          "frontend/src/pages/EmployerJobList.tsx"
         ],
-        "matchedFiles": [
-          "frontend/src/hooks/useQueries.ts",
-          "frontend/src/pages/CreateJobPosting.tsx",
-          "frontend/src/pages/JobTemplates.tsx",
-          "frontend/src/App.tsx",
-          "frontend/src/components/Navigation.tsx"
-        ]
-      },
-      {
-        "id": "REQ-29",
-        "summary": "Create worker availability calendar data model storing availability patterns per worker with day-level granularity, allowing workers to mark days as available or unavailable with optional time range specifications",
-        "status": "unknown",
-        "plannedFiles": [],
         "matchedFiles": []
       },
       {
-        "id": "REQ-30",
-        "summary": "Build worker availability calendar interface with visual day/week/month views allowing workers to toggle availability for specific dates, see upcoming scheduled jobs, and view availability patterns at a glance",
+        "id": "REQ-3",
+        "summary": "Implement job browsing interface where workers can view all available job postings with filters and search capabilities, and apply to jobs that match their skills and availability",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/hooks/useQueries.ts",
-          "frontend/src/components/AvailabilityCalendar.tsx",
-          "frontend/src/pages/WorkerAvailability.tsx",
-          "frontend/src/App.tsx",
-          "frontend/src/components/Navigation.tsx",
-          "frontend/src/pages/JobCandidates.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/hooks/useQueries.ts",
-          "frontend/src/components/AvailabilityCalendar.tsx",
-          "frontend/src/pages/WorkerAvailability.tsx",
-          "frontend/src/App.tsx",
-          "frontend/src/components/Navigation.tsx",
-          "frontend/src/pages/JobCandidates.tsx"
-        ]
-      },
-      {
-        "id": "REQ-31",
-        "summary": "Display worker availability calendars in employer candidate review interface showing which workers are available for the job dates, helping employers make informed hiring decisions based on scheduling compatibility",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/AvailabilityIndicator.tsx",
-          "frontend/src/pages/JobCandidates.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/AvailabilityIndicator.tsx",
-          "frontend/src/pages/JobCandidates.tsx"
-        ]
-      },
-      {
-        "id": "REQ-32",
-        "summary": "Create job reminders system generating notification records for workers about upcoming shifts within 24 hours, job confirmations when assigned to jobs, and important job updates or cancellations",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-33",
-        "summary": "Build in-app notification center for workers displaying upcoming shift reminders, job confirmations, and important alerts with unread badge count, notification list with timestamps, and mark as read functionality",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/hooks/useQueries.ts",
-          "frontend/src/components/NotificationBell.tsx",
-          "frontend/src/components/NotificationList.tsx",
-          "frontend/src/pages/WorkerNotifications.tsx",
-          "frontend/src/App.tsx",
-          "frontend/src/components/Navigation.tsx",
+          "frontend/src/pages/JobDiscovery.tsx",
           "frontend/src/pages/WorkerDashboard.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/hooks/useQueries.ts",
-          "frontend/src/components/NotificationBell.tsx",
-          "frontend/src/components/NotificationList.tsx",
-          "frontend/src/pages/WorkerNotifications.tsx",
+          "frontend/src/pages/WorkerDashboard.tsx"
+        ]
+      },
+      {
+        "id": "REQ-4",
+        "summary": "Integrate Internet Identity authentication for secure login and user identity management, ensuring each user profile is associated with their Internet Identity principal",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/Navigation.tsx",
+          "frontend/src/App.tsx",
+          "frontend/src/components/UserRoleSelector.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/Navigation.tsx",
+          "frontend/src/App.tsx",
+          "frontend/src/components/UserRoleSelector.tsx"
+        ]
+      },
+      {
+        "id": "REQ-5",
+        "summary": "Create a landing page with clear call-to-action for workers and employers to register or login, explaining the platform's core value proposition",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/LandingPage.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/LandingPage.tsx"
+        ]
+      },
+      {
+        "id": "REQ-6",
+        "summary": "Implement role selection flow where new users choose between 'Worker' or 'Employer' role after authentication, then are directed to the appropriate registration form",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/App.tsx",
+          "frontend/src/components/UserRoleSelector.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/App.tsx",
+          "frontend/src/components/UserRoleSelector.tsx"
+        ]
+      },
+      {
+        "id": "REQ-7",
+        "summary": "Create separate dashboard views for workers and employers: worker dashboard shows available jobs and application status; employer dashboard shows posted jobs and received applications",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/WorkerDashboard.tsx",
+          "frontend/src/pages/EmployerDashboard.tsx",
           "frontend/src/App.tsx",
           "frontend/src/components/Navigation.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/WorkerDashboard.tsx",
+          "frontend/src/App.tsx",
+          "frontend/src/components/Navigation.tsx"
+        ]
+      },
+      {
+        "id": "REQ-8",
+        "summary": "Apply a creative and cohesive visual design theme with a distinct style (colors, typography, layout) that reflects the employment marketplace domain. Use professional, trustworthy aesthetics suitable for connecting workers with employers. Ensure consistent styling across all pages and components.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/index.css",
+          "frontend/tailwind.config.js",
+          "frontend/src/components/Layout.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/index.css",
+          "frontend/tailwind.config.js",
+          "frontend/src/components/Layout.tsx"
         ]
       }
     ]
   },
   "changedFiles": [
     "backend/main.mo",
-    "backend/migration.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/public/assets/generated/badge-bronze.dim_128x128.png",
-    "frontend/public/assets/generated/badge-gold.dim_128x128.png",
-    "frontend/public/assets/generated/badge-silver.dim_128x128.png",
-    "frontend/public/assets/generated/icon-calendar.dim_64x64.png",
-    "frontend/public/assets/generated/icon-favorite.dim_64x64.png",
-    "frontend/public/assets/generated/icon-notification.dim_64x64.png",
-    "frontend/public/assets/generated/icon-template.dim_64x64.png",
     "frontend/src/App.tsx",
-    "frontend/src/backend.d.ts",
-    "frontend/src/backend.ts",
-    "frontend/src/components/AvailabilityCalendar.tsx",
-    "frontend/src/components/AvailabilityIndicator.tsx",
-    "frontend/src/components/FavoriteToggle.tsx",
+    "frontend/src/components/Layout.tsx",
     "frontend/src/components/Navigation.tsx",
-    "frontend/src/components/NotificationBell.tsx",
-    "frontend/src/components/NotificationList.tsx",
-    "frontend/src/components/VerificationBadge.tsx",
-    "frontend/src/declarations/backend.did.d.ts",
-    "frontend/src/declarations/backend.did.js",
-    "frontend/src/hooks/useQueries.ts",
-    "frontend/src/pages/CreateJobPosting.tsx",
-    "frontend/src/pages/EmployerFavorites.tsx",
-    "frontend/src/pages/JobCandidates.tsx",
-    "frontend/src/pages/JobTemplates.tsx",
-    "frontend/src/pages/WorkerAvailability.tsx",
-    "frontend/src/pages/WorkerNotifications.tsx",
-    "frontend/src/pages/WorkerProfile.tsx",
+    "frontend/src/components/UserRoleSelector.tsx",
+    "frontend/src/index.css",
+    "frontend/src/pages/LandingPage.tsx",
+    "frontend/src/pages/WorkerDashboard.tsx",
+    "frontend/tailwind.config.js",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",
